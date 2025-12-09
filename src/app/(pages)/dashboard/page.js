@@ -408,7 +408,7 @@ const Dashboard = () => {
             </h2>
 
             {/* Chart container with fixed height and width */}
-            <div className="flex-1 overflow-x-auto pb-2 scrollbar-hide h-300 w-200">
+            <div className="flex-1 overflow-x-auto pb-2 scrollbar-hide h-300 ">
               <div
                 style={{
                   width: "100%",
