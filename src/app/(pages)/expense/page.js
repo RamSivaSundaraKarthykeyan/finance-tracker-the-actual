@@ -202,7 +202,7 @@ const Expense = () => {
       </div>
 
       {/* ------------------- 1. DYNAMIC GRAPH SECTION ------------------- */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-darkBlue mb-8">
         <div className="mb-4">
           <h2 className="text-xl font-semibold text-gray-800">Analytics</h2>
         </div>
@@ -211,7 +211,7 @@ const Expense = () => {
         <div
           ref={scrollContainerRef}
           className="overflow-x-auto pb-4 scrollbar-hide"
-          style={{ cursor: "grab" }}
+          style={{ cursor: "pointer" }}
         >
           {chartData.length === 0 ? (
             // Empty State / No Data Message
@@ -269,7 +269,7 @@ const Expense = () => {
       </div>
 
       {/* ------------------- 2. EXPENSE LIST SECTION ------------------- */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-darkBlue">
         <h2 className="text-xl font-semibold text-gray-800 mb-6">
           Expense History
         </h2>

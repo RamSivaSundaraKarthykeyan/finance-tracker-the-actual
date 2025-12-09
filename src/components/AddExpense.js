@@ -129,7 +129,7 @@ const AddExpense = ({ onSaveSuccess }) => {
                 value={formData.date}
                 onChange={handleChange}
                 // TEXT COLOR FIX
-                className="w-full border border-gray-300 p-2 rounded-md focus:ring-lightBlue focus:border-lightBlue text-gray-900"
+                className="w-full border border-gray-300 p-2 rounded-md focus:ring-lightBlue focus:border-lightBlue text-[#878b93]"
               />
             </div>
 
@@ -159,9 +159,7 @@ const AddExpense = ({ onSaveSuccess }) => {
               </button>
               <button
                 onClick={handleSave}
-                // BUTTON COLOR FIX: Using inline styles for specified hex codes for expenses (e.g., Red)
-                style={{ backgroundColor: "#2566b1" }} // Using the blue theme color for consistency in modal button style
-                className="px-4 py-2 text-white rounded-lg transition-colors hover:bg-[#141e59]"
+                className="px-4 py-2 text-white rounded-lg transition-colors hover:bg-darkBlue bg-lightBlue"
               >
                 Save Expense
               </button>
