@@ -128,7 +128,7 @@ const AddIncome = ({ onSaveSuccess }) => {
                 value={formData.date}
                 onChange={handleChange}
                 // TEXT COLOR FIX: Explicitly set text color to dark gray/black
-                className="w-full border border-gray-300 p-2 rounded-md focus:ring-lightBlue focus:border-lightBlue text-gray-900"
+                className="w-full border border-gray-300 p-2 rounded-md focus:ring-lightBlue focus:border-lightBlue text-[#9b9ea5]"
               />
             </div>
 
@@ -159,8 +159,8 @@ const AddIncome = ({ onSaveSuccess }) => {
               <button
                 onClick={handleSave}
                 // BUTTON COLOR FIX: Using inline styles for specific hex codes
-                style={{ backgroundColor: "#2566b1" }}
-                className="px-4 py-2 text-white rounded-lg transition-colors hover:bg-[#141e59]"
+
+                className="px-4 py-2 text-white rounded-lg transition-colors bg-lightBlue hover:bg-darkBlue"
               >
                 Save Income
               </button>
