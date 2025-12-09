@@ -15,7 +15,7 @@ const NavBar = () => {
         </div>
 
         <div className="flex gap-10 justify-end pr-12">
-          <Link href="/income" className="bg-lightBlue py-1 px-6 rounded-md">
+          <Link href="/login" className="bg-lightBlue py-1 px-6 rounded-md">
             Login
           </Link>
           <Link href="/signup" className="bg-lightBlue py-1 px-6 rounded-md">
