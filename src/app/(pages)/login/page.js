@@ -1,5 +1,4 @@
 import Link from "next/link";
-import React from "react";
 import { FaEyeSlash } from "react-icons/fa";
 
 const login = () => {
