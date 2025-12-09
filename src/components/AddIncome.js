@@ -1,9 +1,9 @@
 "use client";
+import React, { useState } from "react";
 import { IoIosClose } from "react-icons/io";
-import { useState } from "react";
 import Modal from "./Modal";
 
-const AddIncome = () => {
+const AddIncome = ({ onSaveSuccess }) => {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     amount: "",
@@ -11,6 +11,7 @@ const AddIncome = () => {
     date: "",
     description: "",
   });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -18,15 +19,22 @@ const AddIncome = () => {
       [name]: value,
     }));
   };
+
   const handleSave = () => {
+    // Basic Validation
     if (!formData.source || !formData.amount || !formData.date) {
       alert("Please fill in all required fields.");
+      return;
+    }
+    const parsedAmount = parseFloat(formData.amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      alert("Please enter a valid amount.");
       return;
     }
 
     const newIncome = {
       id: Date.now(),
-      amount: parseFloat(formData.amount),
+      amount: parsedAmount,
       source: formData.source,
       date: formData.date,
       description: formData.description,
@@ -39,31 +47,34 @@ const AddIncome = () => {
     existingData.push(newIncome);
     localStorage.setItem("financeTrackerData", JSON.stringify(existingData));
 
+    // Reset form and close modal
     setFormData({ source: "", amount: "", date: "", description: "" });
     setOpen(false);
 
-    console.log("Data saved:", newIncome);
+    if (onSaveSuccess) {
+      onSaveSuccess();
+    }
   };
 
   return (
     <div>
       <button
         className="bg-lightBlue text-white px-4 py-2 rounded-md hover:bg-darkBlue transition-colors"
-        onClick={() => {
-          setOpen(true);
-        }}
+        onClick={() => setOpen(true)}
       >
-        + Add income
+        + Add Income
       </button>
+
+      {/* The Modal component should handle high Z-index for its overlay */}
       <Modal open={open} onClose={() => setOpen(false)}>
-        {/* Modal Content Wrapper - This replaces the placeholder button */}
         <div
-          className="bg-white rounded-xl shadow-2xl overflow-hidden w-[500px]"
-          onClick={(e) => e.stopPropagation()} // Stop propagation to prevent closing on content click
+          // Z-INDEX FIX: Adding z-50 to ensure the modal content sits above the graph
+          className="bg-white rounded-xl shadow-2xl overflow-hidden w-[500px] z-50 relative"
+          onClick={(e) => e.stopPropagation()}
         >
           {/* Modal Header */}
-          <div className="border-b border-darkBlue flex justify-between items-center py-4 px-6 mb-6">
-            <p className="font-semibold text-gray-800 text-2xl ">Add Income</p>
+          <div className="border-b border-gray-200 flex justify-between items-center py-4 px-6 mb-6">
+            <p className="font-semibold text-gray-800 text-2xl">Add Income</p>
             <IoIosClose
               color="black"
               size="36"
@@ -85,14 +96,15 @@ const AddIncome = () => {
                 value={formData.source}
                 onChange={handleChange}
                 placeholder="e.g., Salary, Freelance"
-                className="w-full border text-black border-darkBlue p-2 rounded-md focus:ring-lightBlue focus:border-lightBlue"
+                // TEXT COLOR FIX: Explicitly set text color to dark gray/black
+                className="w-full border border-gray-300 p-2 rounded-md focus:ring-lightBlue focus:border-lightBlue text-gray-900"
               />
             </div>
 
             {/* 2. Amount */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Amount ($):
+                Amount (₹):
               </label>
               <input
                 type="number"
@@ -100,7 +112,8 @@ const AddIncome = () => {
                 value={formData.amount}
                 onChange={handleChange}
                 placeholder="e.g., 5000"
-                className="w-full border text-black border-gray-300 p-2 rounded-md focus:ring-lightBlue focus:border-lightBlue"
+                // TEXT COLOR FIX: Explicitly set text color to dark gray/black
+                className="w-full border border-gray-300 p-2 rounded-md focus:ring-lightBlue focus:border-lightBlue text-gray-900"
               />
             </div>
 
@@ -114,7 +127,24 @@ const AddIncome = () => {
                 name="date"
                 value={formData.date}
                 onChange={handleChange}
-                className="w-full border text-black border-gray-300 p-2 rounded-md focus:ring-lightBlue focus:border-lightBlue"
+                // TEXT COLOR FIX: Explicitly set text color to dark gray/black
+                className="w-full border border-gray-300 p-2 rounded-md focus:ring-lightBlue focus:border-lightBlue text-gray-900"
+              />
+            </div>
+
+            {/* 4. Description */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Description (Optional):
+              </label>
+              <input
+                type="text"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                placeholder="e.g., Monthly salary payment"
+                // TEXT COLOR FIX: Explicitly set text color to dark gray/black
+                className="w-full border border-gray-300 p-2 rounded-md focus:ring-lightBlue focus:border-lightBlue text-gray-900"
               />
             </div>
 
@@ -128,7 +158,9 @@ const AddIncome = () => {
               </button>
               <button
                 onClick={handleSave}
-                className="px-4 py-2 bg-lightBlue text-white rounded-lg hover:bg-darkBlue transition-colors"
+                // BUTTON COLOR FIX: Using inline styles for specific hex codes
+                style={{ backgroundColor: "#2566b1" }}
+                className="px-4 py-2 text-white rounded-lg transition-colors hover:bg-[#141e59]"
               >
                 Save Income
               </button>
