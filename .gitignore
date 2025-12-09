@@ -41,3 +41,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+Now lets implement Dashboard page, just implement the features I am telling you to in the way the design is given(the screenshot I provided to you) I want the search feature which enables the user to quickly search their expense or income at any moment instantly, then total income and expense of the month and the difference(balance), for activity create a sphere like graph the dynamically changes based on the income, expense and balance( the lesser the expense the bigger the size of the sphere with relation to income and balance and the higher the income and balance the bigger the size of the sphere with respect to the expense). make a small comparison graph between last and current month income:expense ratio, in the overview section create a graph for 12 months with each month name(short form) in the bottom of each bar[(the bar should have both expense and income in it so on hover a tooltip must appear like the other pages showing the income, expense and balance of that hovered month), (if there is no data for some months just display the name and dont show any graphs for it)], on the left side of the screenshot a vertical list of month names are given so when a month is clicked the overview graph must switch from 12months view to that particular month data view the graph should be able to scroll and the bar graph must represent the data in the same way that I explained earlier for the 12 month view, and then finally the transaction history  should have the history of all the entries given so far. 
+
+
+
+Give full code
