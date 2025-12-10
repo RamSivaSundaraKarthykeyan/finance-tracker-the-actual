@@ -1,5 +1,5 @@
 import NavBar from "@/components/NavBar";
-import { LucideChartSpline } from "lucide-react";
+import Link from "next/link";
 import { GoGraph } from "react-icons/go";
 
 const home = () => {
@@ -16,9 +16,15 @@ const home = () => {
         </span>
         <sapn className="block mt-0.5"> growing</sapn>
       </p>
-      <button className="text-white bg-lightBlue px-6 py-3 rounded-full mt-12 hover:bg-darkBlue transition duration-300 shadow-md/50">
-        Get Started
-      </button>
+      <div className="mt-12 ">
+        <Link
+          href="/signup"
+          className="text-white bg-lightBlue px-6 py-3 rounded-full hover:bg-darkBlue transition duration-300 shadow-md/50"
+        >
+          Get Started
+        </Link>
+      </div>
+
       <div className="flex gap-8">
         <div className="mt-26 bg-darkBlue w-100 h-75 shadow-md/50">
           <div className="pt-10 pl-8 flex items-center gap-4">
@@ -57,8 +63,6 @@ const home = () => {
           </div>
         </div>
       </div>
-
-      <div>yvgudbvusvbuv</div>
     </div>
   );
 };

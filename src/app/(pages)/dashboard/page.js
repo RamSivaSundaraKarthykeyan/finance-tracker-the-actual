@@ -329,18 +329,15 @@ const Dashboard = () => {
 
           {/* Top Tabs & Search Bar */}
           <div className="flex bg-blue-500 p-1 rounded-lg">
-            <div className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-sm">
-              Dashboard
-            </div>
             <div className="relative ml-4 flex items-center">
               <input
                 type="text"
-                placeholder="Search transactions..."
-                className="pl-10 pr-4 py-2 rounded-lg border-none focus:ring-2 focus:ring-blue-300 outline-none w-64 text-sm text-gray-700"
+                placeholder="Search"
+                className="pl-10 pr-4 py-2 rounded-lg border-none focus:ring-2 placeholder-[#ffffff] focus:ring-blue-300 outline-none w-64 text-sm text-gray-700"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <FaSearch className="absolute left-3 text-gray-400" />
+              <FaSearch className="absolute left-3 text-white" />
             </div>
           </div>
         </div>
@@ -581,9 +578,23 @@ const Dashboard = () => {
 
         {/* --- TRANSACTION HISTORY --- */}
         <div className="bg-gray-100 rounded-2xl p-6 border border-gray-200 shadow-sm">
-          <h2 className="text-lg font-bold text-gray-800 mb-6">
-            Transaction History
-          </h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-bold text-gray-800 mb-6">
+              Transaction History
+            </h2>
+            <div className="flex bg-blue-500 p-1 rounded-lg w-60">
+              <div className="relative ml-4 flex items-center">
+                <input
+                  type="text"
+                  placeholder="Search"
+                  className="pl-10 pr-4 py-2 rounded-lg border-none focus:ring-2 placeholder-[#ffffff] focus:ring-blue-300 outline-none w-54 text-sm text-gray-700"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <FaSearch className="absolute left-3 text-white" />
+              </div>
+            </div>
+          </div>
 
           {/* History table */}
           <div className="overflow-x-auto max-h-96 overflow-y-scroll">
