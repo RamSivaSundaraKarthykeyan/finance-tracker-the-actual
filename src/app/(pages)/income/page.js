@@ -326,5 +326,4 @@ const Income = () => {
     </div>
   );
 };
-
 export default Income;

@@ -12,6 +12,8 @@ import {
   Area,
 } from "recharts";
 import { FaSearch, FaWallet, FaArrowUp, FaArrowDown } from "react-icons/fa";
+import { useSession } from "next-auth/react"; // Import for auth status
+import { getTransactions } from "@/actions/transactionActions"; // Import database action
 
 // --- Constants ---
 const MONTHS = [
@@ -45,8 +47,16 @@ const formatCurrency = (amount) => {
   }).format(amount);
 };
 
+// Helper for validating and parsing transaction data consistently
+const isValidTransaction = (t) => {
+  const d = new Date(t.date);
+  const amt = parseFloat(t.amount);
+  return !(isNaN(d.getTime()) || isNaN(amt) || amt <= 0 || !t.type);
+};
+
 const Dashboard = () => {
-  // --- State ---
+  // --- Auth & State ---
+  const { data: session, status } = useSession();
   const [transactions, setTransactions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(null); // null = Year View, 0-11 = Month View
@@ -58,35 +68,59 @@ const Dashboard = () => {
   });
   const [comparisonStats, setComparisonStats] = useState([]);
 
-  // --- Load Data ---
-  const loadData = useCallback(() => {
-    const savedData =
-      JSON.parse(localStorage.getItem("financeTrackerData")) || [];
+  // --- Load Data (Unified Database/Local Storage) ---
+  const loadData = useCallback(async () => {
+    if (status === "loading") return;
+
+    let allTransactions = [];
+
+    if (session) {
+      // 1. LOGGED IN: Fetch from DB
+      const response = await getTransactions();
+      if (response.success && Array.isArray(response.data)) {
+        allTransactions = response.data;
+      } else {
+        console.warn(
+          "DB Fetch Error:",
+          response.error || "Unknown DB error. Falling back to Local Storage."
+        );
+        // Fallback to local storage if DB fetch fails for a logged-in user
+        const savedData =
+          JSON.parse(localStorage.getItem("financeTrackerData")) || [];
+        allTransactions = savedData;
+      }
+    } else {
+      // 2. LOGGED OUT: Fetch from Local Storage
+      const savedData =
+        JSON.parse(localStorage.getItem("financeTrackerData")) || [];
+      allTransactions = savedData;
+    }
+
+    // Filter and sort the final dataset
+    const validTransactions = allTransactions.filter(isValidTransaction);
     // Sort by date (newest first for history)
-    const sorted = savedData.sort(
+    const sorted = validTransactions.sort(
       (a, b) => new Date(b.date) - new Date(a.date)
     );
     setTransactions(sorted);
-  }, []);
+  }, [session, status]);
 
   useEffect(() => {
     loadData();
-  }, [loadData]);
+  }, [loadData]); // Runs on mount and when session status changes
 
   // --- Filtered Data based on Search (skip invalid entries) ---
   const filteredTransactions = useMemo(() => {
     return transactions.filter((t) => {
-      // Skip invalid date or amount or missing type
-      const d = new Date(t.date);
-      const amt = parseFloat(t.amount);
-      if (isNaN(d.getTime()) || isNaN(amt) || amt <= 0 || !t.type) {
-        return false;
-      }
+      // Data is already validated by loadData, but keeping a quick check
+      if (!isValidTransaction(t)) return false;
+
       // Apply search filter
+      const searchTermLower = searchTerm.toLowerCase();
       const matchSearch =
-        t.source.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        t.source.toLowerCase().includes(searchTermLower) ||
         (t.description &&
-          t.description.toLowerCase().includes(searchTerm.toLowerCase()));
+          t.description.toLowerCase().includes(searchTermLower));
       return matchSearch;
     });
   }, [transactions, searchTerm]);
@@ -102,10 +136,7 @@ const Dashboard = () => {
 
     transactions.forEach((t) => {
       const d = new Date(t.date);
-      const amt = parseFloat(t.amount);
-
-      // Safety checks: Skip invalid or malformed entries
-      if (isNaN(d.getTime()) || isNaN(amt) || amt <= 0 || !t.type) return;
+      const amt = parseFloat(t.amount); // amount is already safe to parse after loadData
 
       if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
         if (t.type === "income") inc += amt;
@@ -130,6 +161,7 @@ const Dashboard = () => {
 
     const scale = 120; // Max px size
 
+    // Ensure a minimum size and scale based on proportions
     const incSize = Math.max(60, (summaryStats.income / total) * scale + 40);
     const balSize = Math.max(
       50,
@@ -146,6 +178,7 @@ const Dashboard = () => {
     const thisMonth = now.getMonth();
     const lastMonth = thisMonth === 0 ? 11 : thisMonth - 1;
     const currentYear = now.getFullYear();
+    const lastYear = thisMonth === 0 ? currentYear - 1 : currentYear;
 
     const stats = {
       thisMonth: { income: 0, expense: 0 },
@@ -156,28 +189,25 @@ const Dashboard = () => {
       const d = new Date(t.date);
       const amt = parseFloat(t.amount);
 
-      // Safety checks: Skip invalid or malformed entries
-      if (isNaN(d.getTime()) || isNaN(amt) || amt <= 0 || !t.type) return;
-
-      if (d.getFullYear() === currentYear) {
-        if (d.getMonth() === thisMonth) {
-          if (t.type === "income") stats.thisMonth.income += amt;
-          else stats.thisMonth.expense += amt;
-        } else if (d.getMonth() === lastMonth) {
-          if (t.type === "income") stats.lastMonth.income += amt;
-          else stats.lastMonth.expense += amt;
-        }
+      if (d.getFullYear() === currentYear && d.getMonth() === thisMonth) {
+        // Current Month transactions
+        if (t.type === "income") stats.thisMonth.income += amt;
+        else if (t.type === "expense") stats.thisMonth.expense += amt;
+      } else if (d.getFullYear() === lastYear && d.getMonth() === lastMonth) {
+        // Last Month transactions
+        if (t.type === "income") stats.lastMonth.income += amt;
+        else if (t.type === "expense") stats.lastMonth.expense += amt;
       }
     });
 
     setComparisonStats([
       {
-        name: "Last Month",
+        name: MONTHS[lastMonth],
         income: stats.lastMonth.income,
         expense: stats.lastMonth.expense,
       },
       {
-        name: "This Month",
+        name: MONTHS[thisMonth],
         income: stats.thisMonth.income,
         expense: stats.thisMonth.expense,
       },
@@ -200,14 +230,8 @@ const Dashboard = () => {
         const d = new Date(t.date);
         const amt = parseFloat(t.amount);
 
-        // Skip invalid, zero/negative, or non-current year transactions
-        if (
-          isNaN(d.getTime()) ||
-          isNaN(amt) ||
-          amt <= 0 ||
-          !t.type ||
-          d.getFullYear() !== currentYear
-        ) {
+        // Filter by current year
+        if (d.getFullYear() !== currentYear) {
           return;
         }
 
@@ -233,23 +257,18 @@ const Dashboard = () => {
         const d = new Date(t.date);
         const amt = parseFloat(t.amount);
 
-        // Skip invalid, zero/negative, or non-current year transactions
+        // Filter by current year and selected month
         if (
-          isNaN(d.getTime()) ||
-          isNaN(amt) ||
-          amt <= 0 ||
-          !t.type ||
-          d.getFullYear() !== currentYear
+          d.getFullYear() !== currentYear ||
+          d.getMonth() !== selectedMonthIndex
         ) {
           return;
         }
 
-        if (d.getMonth() === selectedMonthIndex) {
-          const day = d.getDate();
-          if (dataMap[day]) {
-            if (t.type === "income") dataMap[day].income += amt;
-            else if (t.type === "expense") dataMap[day].expense += amt;
-          }
+        const day = d.getDate();
+        if (dataMap[day]) {
+          if (t.type === "income") dataMap[day].income += amt;
+          else if (t.type === "expense") dataMap[day].expense += amt;
         }
       });
     }
@@ -262,7 +281,7 @@ const Dashboard = () => {
     setChartData(formattedData);
   }, [transactions, selectedMonthIndex]);
 
-  // --- Custom Tooltip ---
+  // --- Custom Tooltip (Remains unchanged) ---
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
@@ -617,7 +636,8 @@ const Dashboard = () => {
                 ) : (
                   filteredTransactions.map((t, index) => (
                     <tr
-                      key={`${t.id}-${t.type}-${index}`}
+                      // Use a combination of keys for uniqueness, preferring _id if it exists (from DB)
+                      key={t._id || `${t.source}-${t.type}-${index}`}
                       className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
                     >
                       <td className="py-4 pl-4 flex items-center gap-3">
@@ -664,5 +684,4 @@ const Dashboard = () => {
     </div>
   );
 };
-
 export default Dashboard;
