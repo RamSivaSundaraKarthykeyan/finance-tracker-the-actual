@@ -9,9 +9,13 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { FaShoppingCart, FaTrash } from "react-icons/fa"; // Changed icon
+import { FaShoppingCart, FaTrash } from "react-icons/fa";
+import { useSession } from "next-auth/react";
+import {
+  getTransactions,
+  deleteTransaction,
+} from "@/actions/transactionActions"; // REAL BACKEND IMPORT
 
-// Constants for Graph presentation
 const BAR_WIDTH = 100;
 const PADDING_FOR_MAX = 1.2;
 
@@ -20,8 +24,8 @@ const Expense = () => {
   const [chartData, setChartData] = useState([]);
   const [yAxisDomain, setYAxisDomain] = useState([0, 100]);
   const scrollContainerRef = useRef(null);
+  const { data: session, status } = useSession();
 
-  // Helper function for Rupee formatting
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
@@ -31,10 +35,9 @@ const Expense = () => {
     }).format(amount);
   };
 
-  // Helper to check if data item is valid EXPENSE
   const isValidExpense = (item) => {
     return (
-      item.type === "expense" && // Filter for expense
+      item.type === "expense" &&
       item.source &&
       !isNaN(parseFloat(item.amount)) &&
       parseFloat(item.amount) > 0 &&
@@ -42,22 +45,16 @@ const Expense = () => {
     );
   };
 
-  // Memoized function for processing chart data
   const processChartData = useCallback((data) => {
     const groupedByDay = {};
-
     data.forEach((item) => {
       const amount = parseFloat(item.amount);
       const dateObj = new Date(item.date);
-
       const day = dateObj.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
       });
-
-      if (!groupedByDay[day]) {
-        groupedByDay[day] = 0;
-      }
+      if (!groupedByDay[day]) groupedByDay[day] = 0;
       groupedByDay[day] += amount;
     });
 
@@ -68,7 +65,6 @@ const Expense = () => {
 
     setChartData(chartArray);
 
-    // Calculate Y-axis domain
     if (chartArray.length > 0) {
       const maxAmount = Math.max(...chartArray.map((d) => d.amount));
       const maxDomain = Math.ceil((maxAmount * PADDING_FOR_MAX) / 1000) * 1000;
@@ -78,38 +74,56 @@ const Expense = () => {
     }
   }, []);
 
-  // Function to load and refresh data
-  const loadData = useCallback(() => {
-    const savedData =
-      JSON.parse(localStorage.getItem("financeTrackerData")) || [];
+  const loadData = useCallback(async () => {
+    if (status === "loading") return;
 
-    const expenses = savedData.filter(isValidExpense); // Filter for expenses
+    let expenses = [];
 
-    // Sort by date (oldest to newest)
+    if (session) {
+      // 1. LOGGED IN: Fetch from DB
+      const response = await getTransactions();
+      if (response.success && Array.isArray(response.data)) {
+        expenses = response.data.filter(isValidExpense);
+      } else {
+        console.error("DB Fetch Error:", response.error);
+      }
+    } else {
+      // 2. LOGGED OUT: Fetch from Local Storage
+      const savedData =
+        JSON.parse(localStorage.getItem("financeTrackerData")) || [];
+      expenses = savedData.filter(isValidExpense);
+    }
+
     expenses.sort((a, b) => new Date(a.date) - new Date(b.date));
-
     setTransactions(expenses);
     processChartData(expenses);
-  }, [processChartData]);
+  }, [session, status, processChartData]);
 
-  // Handle Deletion
-  const handleDelete = (id) => {
-    const existingData =
-      JSON.parse(localStorage.getItem("financeTrackerData")) || [];
-
-    const updatedData = existingData.filter((item) => item.id !== id);
-
-    localStorage.setItem("financeTrackerData", JSON.stringify(updatedData));
-
-    loadData();
+  const handleDelete = async (id) => {
+    if (session) {
+      // 1. LOGGED IN: Delete from DB
+      if (!confirm("Delete this record from the cloud?")) return;
+      const response = await deleteTransaction(id);
+      if (response.success) {
+        loadData();
+      } else {
+        alert(`Failed to delete: ${response.error}`);
+      }
+    } else {
+      // 2. LOGGED OUT: Delete from Local Storage
+      if (!confirm("Delete this record from local storage?")) return;
+      const existingData =
+        JSON.parse(localStorage.getItem("financeTrackerData")) || [];
+      const updatedData = existingData.filter((item) => item.id !== id);
+      localStorage.setItem("financeTrackerData", JSON.stringify(updatedData));
+      loadData();
+    }
   };
 
-  // Initial Data Load and Refresh Handler
   useEffect(() => {
     loadData();
   }, [loadData]);
 
-  // Auto-scroll graph to the end (latest dates) on load/refresh
   useEffect(() => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollLeft =
@@ -117,13 +131,11 @@ const Expense = () => {
     }
   }, [chartData]);
 
-  // Custom Tooltip for the Graph
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white p-2 border border-gray-200 shadow-md rounded-md text-sm">
           <p className="font-semibold text-black">{label}</p>
-          {/* Use expense color (red) */}
           <p className="text-red-600 font-bold">
             {formatCurrency(payload[0].value)}
           </p>
@@ -133,12 +145,10 @@ const Expense = () => {
     return null;
   };
 
-  // Logic to render the Status Badge (Percentage Difference from Previous Entry)
   const getStatusBadge = (item, index) => {
-    // Note: transactions array is sorted oldest to newest here.
+    const reversedTransactions = transactions.slice().reverse();
     const originalIndex = transactions.length - 1 - index;
 
-    // The first item (newest) has no previous entry to compare against
     if (originalIndex === 0) {
       return (
         <span className="bg-gray-100 border border-gray-300 px-4 py-1 rounded-full text-sm font-semibold text-gray-600 shadow-sm">
@@ -161,8 +171,6 @@ const Expense = () => {
 
     const difference = currentAmount - previousAmount;
     const percentageChange = (difference / previousAmount) * 100;
-
-    // In expenses, a negative difference (decrease in spending) is GOOD.
     const isIncrease = difference > 0;
     const isFlat = difference === 0;
 
@@ -174,7 +182,6 @@ const Expense = () => {
       );
     }
 
-    // Colors reversed for expense: Red (increase in spending) is BAD, Green (decrease in spending) is GOOD.
     const badgeColor = isIncrease
       ? "bg-red-100 border-red-300 text-red-600"
       : "bg-green-100 border-green-300 text-green-600";
@@ -192,7 +199,6 @@ const Expense = () => {
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
-      {/* Header Section */}
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Expense Overview</h1>
@@ -201,20 +207,16 @@ const Expense = () => {
         <AddExpense onSaveSuccess={loadData} />
       </div>
 
-      {/* ------------------- 1. DYNAMIC GRAPH SECTION ------------------- */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-darkBlue mb-8">
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-red-500 mb-8">
         <div className="mb-4">
           <h2 className="text-xl font-semibold text-gray-800">Analytics</h2>
         </div>
-
-        {/* Scrollable Container for Horizontal History */}
         <div
           ref={scrollContainerRef}
           className="overflow-x-auto pb-4 scrollbar-hide"
           style={{ cursor: "pointer" }}
         >
           {chartData.length === 0 ? (
-            // Empty State / No Data Message
             <div className="text-center py-20 bg-gray-100 rounded-lg">
               <p className="text-gray-600 text-xl font-medium">
                 Enter new data to get started and view your spending trends!
@@ -228,24 +230,19 @@ const Expense = () => {
               style={{
                 width: `${Math.max(800, chartData.length * BAR_WIDTH)}px`,
                 height: "350px",
-                paddingTop: "20px",
-                paddingBottom: "20px",
-                paddingLeft: "20px",
-                paddingRight: "20px",
+                padding: "20px",
                 borderRadius: "16px",
                 background: "#f2eeee",
               }}
             >
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData} barSize={60}>
-                  {/* Y-Axis: Shows dynamic Rupee range */}
                   <YAxis
                     domain={yAxisDomain}
                     axisLine={false}
                     tickLine={false}
                     tickFormatter={(value) => formatCurrency(value)}
                   />
-                  {/* X-Axis: Shows Date */}
                   <XAxis
                     dataKey="day"
                     axisLine={false}
@@ -258,7 +255,7 @@ const Expense = () => {
                   />
                   <Bar
                     dataKey="amount"
-                    fill="#3f51b5" // Changed bar color for Expense (e.g., Indigo/Blue)
+                    fill="#dc2626"
                     radius={[10, 10, 0, 0]}
                   />
                 </BarChart>
@@ -268,13 +265,10 @@ const Expense = () => {
         </div>
       </div>
 
-      {/* ------------------- 2. EXPENSE LIST SECTION ------------------- */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-darkBlue">
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-red-500">
         <h2 className="text-xl font-semibold text-gray-800 mb-6">
           Expense History
         </h2>
-
-        {/* Header Row */}
         {transactions.length > 0 && (
           <div className="grid grid-cols-5 text-gray-400 font-medium mb-4 px-4">
             <span>Source</span>
@@ -284,8 +278,6 @@ const Expense = () => {
             <span className="text-right">Actions</span>
           </div>
         )}
-
-        {/* Scrollable List Container (Vertical Scroll) */}
         <div className="flex flex-col gap-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
           {transactions.length === 0 ? (
             <p className="text-center text-gray-400 py-10">
@@ -294,13 +286,12 @@ const Expense = () => {
           ) : (
             transactions
               .slice()
-              .reverse() // Display newest first
+              .reverse()
               .map((item, index) => (
                 <div
-                  key={item.id}
+                  key={item._id || item.id}
                   className="grid grid-cols-5 items-center bg-gray-50 p-4 rounded-xl hover:bg-gray-100 transition-colors"
                 >
-                  {/* Source & Icon */}
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600">
                       <FaShoppingCart />
@@ -309,26 +300,18 @@ const Expense = () => {
                       {item.source}
                     </span>
                   </div>
-
-                  {/* Date */}
                   <span className="text-gray-500 font-medium">
                     {new Date(item.date).toLocaleDateString()}
                   </span>
-
-                  {/* Amount */}
-                  <span className="font-bold text-gray-800">
+                  <span className="font-bold text-red-600">
                     {formatCurrency(item.amount || 0)}
                   </span>
-
-                  {/* Status/Badge - PoP Logic */}
                   <div className="text-right">
                     {getStatusBadge(item, index)}
                   </div>
-
-                  {/* Delete Button */}
                   <div className="text-right">
                     <button
-                      onClick={() => handleDelete(item.id)}
+                      onClick={() => handleDelete(item._id || item.id)}
                       className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition-colors"
                       aria-label="Delete Expense"
                     >

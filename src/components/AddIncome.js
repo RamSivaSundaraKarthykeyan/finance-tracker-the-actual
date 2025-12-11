@@ -2,13 +2,16 @@
 import React, { useState } from "react";
 import { IoIosClose } from "react-icons/io";
 import Modal from "./Modal";
+import { useSession } from "next-auth/react";
+import { addTransaction } from "@/actions/transactionActions";
 
 const AddIncome = ({ onSaveSuccess }) => {
+  const { data: session } = useSession();
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     amount: "",
     source: "",
-    date: "",
+    date: new Date().toISOString().split("T")[0],
     description: "",
   });
 
@@ -20,8 +23,7 @@ const AddIncome = ({ onSaveSuccess }) => {
     }));
   };
 
-  const handleSave = () => {
-    // Basic Validation
+  const handleSave = async () => {
     if (!formData.source || !formData.amount || !formData.date) {
       alert("Please fill in all required fields.");
       return;
@@ -32,8 +34,7 @@ const AddIncome = ({ onSaveSuccess }) => {
       return;
     }
 
-    const newIncome = {
-      id: Date.now(),
+    const transactionData = {
       amount: parsedAmount,
       source: formData.source,
       date: formData.date,
@@ -41,38 +42,63 @@ const AddIncome = ({ onSaveSuccess }) => {
       type: "income",
     };
 
-    const existingData =
-      JSON.parse(localStorage.getItem("financeTrackerData")) || [];
+    let saveSuccessful = false;
 
-    existingData.push(newIncome);
-    localStorage.setItem("financeTrackerData", JSON.stringify(existingData));
+    if (session) {
+      // 1. LOGGED IN: Save to MongoDB
+      console.log("Saving income to MongoDB...");
+      const result = await addTransaction(transactionData);
 
-    // Reset form and close modal
-    setFormData({ source: "", amount: "", date: "", description: "" });
-    setOpen(false);
+      if (result.success) {
+        saveSuccessful = true;
+      } else {
+        alert("Failed to save income to the cloud: " + result.error);
+      }
+    } else {
+      // 2. LOGGED OUT: Save to Local Storage
+      console.log("Saving income to Local Storage...");
+      const newTransaction = {
+        ...transactionData,
+        id: Date.now(),
+      };
 
-    if (onSaveSuccess) {
-      onSaveSuccess();
+      const existingData =
+        JSON.parse(localStorage.getItem("financeTrackerData")) || [];
+
+      existingData.push(newTransaction);
+      localStorage.setItem("financeTrackerData", JSON.stringify(existingData));
+      saveSuccessful = true;
+    }
+
+    if (saveSuccessful) {
+      setFormData({
+        source: "",
+        amount: "",
+        date: new Date().toISOString().split("T")[0],
+        description: "",
+      });
+      setOpen(false);
+
+      if (onSaveSuccess) {
+        onSaveSuccess();
+      }
     }
   };
 
   return (
     <div>
       <button
-        className="bg-lightBlue text-white px-4 py-2 rounded-md hover:bg-darkBlue transition-colors"
+        className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
         onClick={() => setOpen(true)}
       >
         + Add Income
       </button>
 
-      {/* The Modal component should handle high Z-index for its overlay */}
       <Modal open={open} onClose={() => setOpen(false)}>
         <div
-          // Z-INDEX FIX: Adding z-50 to ensure the modal content sits above the graph
           className="bg-white rounded-xl shadow-2xl overflow-hidden w-[500px] z-50 relative"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Modal Header */}
           <div className="border-b border-gray-200 flex justify-between items-center py-4 px-6 mb-6">
             <p className="font-semibold text-gray-800 text-2xl">Add Income</p>
             <IoIosClose
@@ -83,9 +109,7 @@ const AddIncome = ({ onSaveSuccess }) => {
             />
           </div>
 
-          {/* Form Fields */}
           <div className="px-6 pb-6 space-y-4">
-            {/* 1. Income Source */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Income Source:
@@ -96,12 +120,10 @@ const AddIncome = ({ onSaveSuccess }) => {
                 value={formData.source}
                 onChange={handleChange}
                 placeholder="e.g., Salary, Freelance"
-                // TEXT COLOR FIX: Explicitly set text color to dark gray/black
-                className="w-full border border-gray-300 p-2 rounded-md focus:ring-lightBlue focus:border-lightBlue text-gray-900"
+                className="w-full border border-gray-300 p-2 rounded-md focus:ring-green-500 focus:border-green-500 text-gray-900"
               />
             </div>
 
-            {/* 2. Amount */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Amount (₹):
@@ -112,12 +134,10 @@ const AddIncome = ({ onSaveSuccess }) => {
                 value={formData.amount}
                 onChange={handleChange}
                 placeholder="e.g., 5000"
-                // TEXT COLOR FIX: Explicitly set text color to dark gray/black
-                className="w-full border border-gray-300 p-2 rounded-md focus:ring-lightBlue focus:border-lightBlue text-gray-900"
+                className="w-full border border-gray-300 p-2 rounded-md focus:ring-green-500 focus:border-green-500 text-gray-900"
               />
             </div>
 
-            {/* 3. Date */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Date:
@@ -127,12 +147,10 @@ const AddIncome = ({ onSaveSuccess }) => {
                 name="date"
                 value={formData.date}
                 onChange={handleChange}
-                // TEXT COLOR FIX: Explicitly set text color to dark gray/black
-                className="w-full border border-gray-300 p-2 rounded-md focus:ring-lightBlue focus:border-lightBlue text-[#9b9ea5]"
+                className="w-full border border-gray-300 p-2 rounded-md focus:ring-green-500 focus:border-green-500 text-gray-900"
               />
             </div>
 
-            {/* 4. Description */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Description (Optional):
@@ -143,12 +161,10 @@ const AddIncome = ({ onSaveSuccess }) => {
                 value={formData.description}
                 onChange={handleChange}
                 placeholder="e.g., Monthly salary payment"
-                // TEXT COLOR FIX: Explicitly set text color to dark gray/black
-                className="w-full border border-gray-300 p-2 rounded-md focus:ring-lightBlue focus:border-lightBlue text-gray-900"
+                className="w-full border border-gray-300 p-2 rounded-md focus:ring-green-500 focus:border-green-500 text-gray-900"
               />
             </div>
 
-            {/* Footer/Action Buttons */}
             <div className="flex justify-end pt-4 space-x-3">
               <button
                 onClick={() => setOpen(false)}
@@ -158,9 +174,7 @@ const AddIncome = ({ onSaveSuccess }) => {
               </button>
               <button
                 onClick={handleSave}
-                // BUTTON COLOR FIX: Using inline styles for specific hex codes
-
-                className="px-4 py-2 text-white rounded-lg transition-colors bg-lightBlue hover:bg-darkBlue"
+                className="px-4 py-2 text-white rounded-lg transition-colors bg-green-500 hover:bg-green-700"
               >
                 Save Income
               </button>
