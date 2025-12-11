@@ -52,7 +52,7 @@ const LoginPage = () => {
         {/* Google Sign-In Button */}
         <button
           onClick={() => signIn("google", { callbackUrl: "/dashboard" })} // Redirects to Dashboard after successful sign-in
-          className="bg-white w-80 rounded-lg h-10 text-lg font-semibold text-black border border-gray-300 hover:bg-gray-100 transition duration-300 shadow-md/50 mt-4 flex items-center justify-center gap-3"
+          className="bg-white w-80 rounded-lg h-10 text-lg font-semibold text-black border border-gray-300 hover:border-black hover:text-white hover:bg-black  transition duration-300 shadow-md/50 mt-4 flex items-center justify-center gap-3"
         >
           <FcGoogle className="size-5" />
           Continue with Google
@@ -64,7 +64,7 @@ const LoginPage = () => {
           </p>
           <Link
             href="/signup"
-            className="text-lightBlue font-semibold hover:underline transition duration-900"
+            className="text-darkBlue font-bold hover:underline transition duration-900"
           >
             SignUp
           </Link>

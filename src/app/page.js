@@ -1,6 +1,8 @@
 import NavBar from "@/components/NavBar";
 import Link from "next/link";
 import { GoGraph } from "react-icons/go";
+import { FaHandshake } from "react-icons/fa";
+import { FaGlobeAmericas } from "react-icons/fa";
 
 const home = () => {
   return (
@@ -26,40 +28,40 @@ const home = () => {
       </div>
 
       <div className="flex gap-8">
-        <div className="mt-26 bg-darkBlue w-100 h-75 shadow-md/50">
+        <div className="mt-26 bg-darkBlue w-110 h-75 shadow-md/50 rounded-lg">
           <div className="pt-10 pl-8 flex items-center gap-4">
             <GoGraph color="#4286f2" size="70" className="" />
             <p className="font-extrabold text-2xl">
               Financial <span className="block">Analysis</span>
             </p>
           </div>
-          <div className="pl-30 pt-4">
-            High transaction frequency detected in shopping categor xhchsc
-            dsddgguhdjd djhdjsdhkhddmdhhkhdkdn jhdggjdhbdbddndb jahshddoiojmnjh.
+          <div className="pl-30 pt-4 pr-10">
+            Gain deep insights into your financial performance with real-time
+            analytics. Our advanced tools help you track income and expenses
           </div>
         </div>
-        <div className="mt-26 bg-darkBlue w-100 h-75 shadow-md/50">
+        <div className="mt-26 bg-darkBlue w-100 h-75 shadow-md/50 rounded-lg">
           <div className="pt-10 pl-8 flex items-center gap-4">
-            <GoGraph color="#4286f2" size="70" className="" />
+            <FaHandshake color="#4286f2" size="70" className="" />
             <p className="font-extrabold text-2xl">
-              Financial <span className="block">Analysis</span>
+              Trusted <span className="block">Partnership</span>
             </p>
           </div>
-          <div className="pl-30 pt-4">
-            High transaction frequency detected in shopping categor xhchsc
-            dsddgguhdjd djhdjsdhkhddmdhhkhdkdn jhdggjdhbdbddndb jahshddoiojmnjh.
+          <div className="pl-30 pt-4 pr-10">
+            We believe in building long-term relationships based on trust,
+            transparency, and integrity.
           </div>
         </div>
-        <div className="mt-26 bg-darkBlue w-100 h-75 shadow-md/50">
+        <div className="mt-26 bg-darkBlue w-100 h-75 shadow-md/50 rounded-lg">
           <div className="pt-10 pl-8 flex items-center gap-4">
-            <GoGraph color="#4286f2" size="70" className="" />
+            <FaGlobeAmericas color="#4286f2" size="70" className="" />
             <p className="font-extrabold text-2xl">
-              Financial <span className="block">Analysis</span>
+              Global <span className="block">Partnership</span>
             </p>
           </div>
-          <div className="pl-30 pt-4">
-            High transaction frequency detected in shopping categor xhchsc
-            dsddgguhdjd djhdjsdhkhddmdhhkhdkdn jhdggjdhbdbddndb jahshddoiojmnjh.
+          <div className="pl-30 pt-4 pr-10">
+            Whether you&apos;re growing a business or managing personal
+            investments, our webservice keeps in control of your finances.
           </div>
         </div>
       </div>

@@ -14,7 +14,7 @@ import { useSession } from "next-auth/react";
 import {
   getTransactions,
   deleteTransaction,
-} from "@/actions/transactionActions"; // REAL BACKEND IMPORT
+} from "@/actions/transactionActions";
 
 const BAR_WIDTH = 100;
 const PADDING_FOR_MAX = 1.2;
@@ -207,7 +207,7 @@ const Income = () => {
         <AddIncome onSaveSuccess={loadData} />
       </div>
 
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-green-500 mb-8">
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-green-600 mb-8">
         <div className="mb-4">
           <h2 className="text-xl font-semibold text-gray-800">Analytics</h2>
         </div>
@@ -232,7 +232,7 @@ const Income = () => {
                 height: "350px",
                 padding: "20px",
                 borderRadius: "16px",
-                background: "#f2ffee",
+                background: "#ebffe5",
               }}
             >
               <ResponsiveContainer width="100%" height="100%">
@@ -255,7 +255,7 @@ const Income = () => {
                   />
                   <Bar
                     dataKey="amount"
-                    fill="#10b981"
+                    fill="#00c950"
                     radius={[10, 10, 0, 0]}
                   />
                 </BarChart>
@@ -265,7 +265,7 @@ const Income = () => {
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-green-500">
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-green-600">
         <h2 className="text-xl font-semibold text-gray-800 mb-6">
           Income History
         </h2>
