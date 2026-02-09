@@ -2,16 +2,25 @@
 
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
+import { useState } from "react";
+import { HiMenu, HiX } from "react-icons/hi";
 
 const NavBar = () => {
   const { data: session } = useSession();
+  const [isOpen, setIsOpen] = useState(false);
 
-  const AuthButtons = () => {
+  const toggleMenu = () => setIsOpen(!isOpen);
+
+  const AuthButtons = ({ isMobile }) => {
     if (session) {
       return (
         <button
-          onClick={() => signOut({ callbackUrl: "/login" })} // Redirect to /login after logout
-          className="bg-red-500 py-1 px-6 rounded-md text-white font-semibold hover:bg-red-600 transition duration-300"
+          onClick={() => {
+            signOut({ callbackUrl: "/login" });
+            if (isMobile) setIsOpen(false);
+          }}
+          className={`${isMobile ? "w-full" : ""
+            } bg-red-500 py-1 px-6 rounded-md text-white font-semibold hover:bg-red-600 transition duration-300`}
         >
           Logout
         </button>
@@ -21,13 +30,17 @@ const NavBar = () => {
         <>
           <Link
             href="/login"
-            className="bg-lightBlue py-1 px-6 rounded-md hover:bg-lightBlue/80 transition duration-300"
+            onClick={() => isMobile && setIsOpen(false)}
+            className={`${isMobile ? "w-full text-center" : ""
+              } bg-lightBlue py-1 px-6 rounded-md hover:bg-lightBlue/80 transition duration-300`}
           >
             Login
           </Link>
           <Link
             href="/signup"
-            className="bg-lightBlue py-1 px-6 rounded-md hover:bg-lightBlue/80 transition duration-300"
+            onClick={() => isMobile && setIsOpen(false)}
+            className={`${isMobile ? "w-full text-center" : ""
+              } bg-lightBlue py-1 px-6 rounded-md hover:bg-lightBlue/80 transition duration-300`}
           >
             Sign up
           </Link>
@@ -37,19 +50,26 @@ const NavBar = () => {
   };
 
   return (
-    <div className="text-white">
-      {" "}
-      {/* Ensure text color is white for visibility */}
-      <div className="bg-darkBlue flex justify-between items-center h-20">
+    <nav className="text-white bg-darkBlue relative z-50">
+      <div className="bg-darkBlue flex justify-between items-center h-20 px-6 md:px-12">
         {/* Left Side: Logo */}
-        <Link href="/" className="font-bold text-xl pl-12">
+        <Link href="/" className="font-bold text-xl">
           Finance Tracker
         </Link>
 
-        {/* Center: Navigation Links */}
-        <div className="flex justify-center gap-10 text-lg">
-          {" "}
-          {/* Adjusted gap for better spacing */}
+        {/* Hamburger Menu Icon (Mobile Only) */}
+        <div className="md:hidden">
+          <button
+            onClick={toggleMenu}
+            className="text-3xl focus:outline-none"
+            aria-label="Toggle menu"
+          >
+            {isOpen ? <HiX /> : <HiMenu />}
+          </button>
+        </div>
+
+        {/* Center: Navigation Links (Desktop Only) */}
+        <div className="hidden md:flex justify-center gap-10 text-lg">
           <Link
             href="/dashboard"
             className="hover:text-lightBlue transition duration-300"
@@ -70,12 +90,44 @@ const NavBar = () => {
           </Link>
         </div>
 
-        {/* Right Side: Conditional Auth Buttons */}
-        <div className="flex gap-10 justify-end pr-12">
-          <AuthButtons />
+        {/* Right Side: Conditional Auth Buttons (Desktop Only) */}
+        <div className="hidden md:flex gap-4 lg:gap-10 justify-end">
+          <AuthButtons isMobile={false} />
         </div>
       </div>
-    </div>
+
+      {/* Mobile Menu (Overlay) */}
+      <div
+        className={`${isOpen ? "flex" : "hidden"
+          } md:hidden flex-col bg-darkBlue absolute top-20 left-0 w-full p-6 space-y-4 shadow-xl border-t border-white/10`}
+      >
+        <Link
+          href="/dashboard"
+          onClick={toggleMenu}
+          className="text-lg hover:text-lightBlue transition duration-300"
+        >
+          Dashboard
+        </Link>
+        <Link
+          href="/income"
+          onClick={toggleMenu}
+          className="text-lg hover:text-lightBlue transition duration-300"
+        >
+          Income
+        </Link>
+        <Link
+          href="/expense"
+          onClick={toggleMenu}
+          className="text-lg hover:text-lightBlue transition duration-300"
+        >
+          Expense
+        </Link>
+        <hr className="border-white/10" />
+        <div className="flex flex-col gap-4">
+          <AuthButtons isMobile={true} />
+        </div>
+      </div>
+    </nav>
   );
 };
 

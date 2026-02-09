@@ -298,9 +298,8 @@ const Dashboard = () => {
           </p>
           <div className="border-t my-1"></div>
           <p
-            className={`font-semibold ${
-              data.balance >= 0 ? "text-green-600" : "text-red-600"
-            }`}
+            className={`font-semibold ${data.balance >= 0 ? "text-green-600" : "text-red-600"
+              }`}
           >
             Balance: {formatCurrency(data.balance)}
           </p>
@@ -311,16 +310,15 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* --- LEFT SIDEBAR (Month Selector) --- */}
+    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
+      {/* --- LEFT SIDEBAR (Month Selector) - Desktop --- */}
       <div className="w-24 bg-white border-r border-gray-200 flex flex-col items-center py-6 gap-2 sticky top-0 h-screen overflow-y-auto hidden md:flex">
         <button
           onClick={() => setSelectedMonthIndex(null)}
-          className={`w-16 py-2 rounded-xl text-sm font-semibold transition-all ${
-            selectedMonthIndex === null
-              ? "bg-blue-600 text-white shadow-md"
-              : "text-gray-500 hover:bg-gray-100"
-          }`}
+          className={`w-16 py-2 rounded-xl text-sm font-semibold transition-all ${selectedMonthIndex === null
+            ? "bg-blue-600 text-white shadow-md"
+            : "text-gray-500 hover:bg-gray-100"
+            }`}
         >
           Year
         </button>
@@ -329,30 +327,56 @@ const Dashboard = () => {
           <button
             key={m}
             onClick={() => setSelectedMonthIndex(i)}
-            className={`w-16 py-3 rounded-xl text-sm font-medium transition-all ${
-              selectedMonthIndex === i
-                ? "bg-blue-100 text-blue-700 border-2 border-blue-200"
-                : "text-gray-500 hover:bg-gray-50"
-            }`}
+            className={`w-16 py-3 rounded-xl text-sm font-medium transition-all ${selectedMonthIndex === i
+              ? "bg-blue-100 text-blue-700 border-2 border-blue-200"
+              : "text-gray-500 hover:bg-gray-50"
+              }`}
           >
             {m}
           </button>
         ))}
       </div>
 
+      {/* --- MOBILE MONTH SELECTOR --- */}
+      <div className="md:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-30">
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          <button
+            onClick={() => setSelectedMonthIndex(null)}
+            className={`flex-shrink-0 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${selectedMonthIndex === null
+              ? "bg-blue-600 text-white shadow-md"
+              : "bg-gray-100 text-gray-500"
+              }`}
+          >
+            Year
+          </button>
+          {MONTHS.map((m, i) => (
+            <button
+              key={m}
+              onClick={() => setSelectedMonthIndex(i)}
+              className={`flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedMonthIndex === i
+                ? "bg-blue-100 text-blue-700 border border-blue-200"
+                : "bg-gray-100 text-gray-500"
+                }`}
+            >
+              {m}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* --- MAIN CONTENT --- */}
       <div className="flex-1 p-4 md:p-8 overflow-x-hidden">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Dashboard</h1>
 
           {/* Top Tabs & Search Bar */}
-          <div className="flex bg-blue-500 p-1 rounded-lg">
-            <div className="relative ml-4 flex items-center">
+          <div className="w-full sm:w-auto flex bg-blue-500 p-1 rounded-lg">
+            <div className="relative flex-1 sm:flex-initial flex items-center">
               <input
                 type="text"
-                placeholder="Search"
-                className="pl-10 pr-4 py-2 rounded-lg border-none focus:ring-2 placeholder-[#ffffff] focus:ring-blue-300 outline-none w-64 text-sm text-gray-700"
+                placeholder="Search transactions..."
+                className="pl-10 pr-4 py-2 rounded-lg border-none focus:ring-2 placeholder-white/70 focus:ring-blue-300 outline-none w-full sm:w-64 text-sm text-white bg-blue-600/50"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -362,9 +386,9 @@ const Dashboard = () => {
         </div>
 
         {/* --- TOP STATS CARDS --- */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
           {/* Income Card */}
-          <div className="bg-gray-200 rounded-2xl p-6 flex flex-col justify-between h-32 relative overflow-hidden border border-gray-300">
+          <div className="bg-white rounded-2xl p-6 flex flex-col justify-between h-32 relative overflow-hidden border border-gray-200 shadow-sm transition-transform hover:scale-[1.02]">
             <div className="flex items-center gap-2 z-10">
               <div className="p-2 bg-blue-500 rounded-full text-white">
                 <FaWallet />
@@ -374,13 +398,13 @@ const Dashboard = () => {
             <h2 className="text-2xl font-bold text-gray-900 z-10">
               {formatCurrency(summaryStats.income)}
             </h2>
-            <div className="absolute right-0 bottom-0 opacity-10">
-              <FaArrowUp size={100} />
+            <div className="absolute right-0 bottom-0 opacity-10 text-blue-500">
+              <FaArrowUp size={80} />
             </div>
           </div>
 
           {/* Expense Card */}
-          <div className="bg-gray-200 rounded-2xl p-6 flex flex-col justify-between h-32 relative overflow-hidden border border-gray-300">
+          <div className="bg-white rounded-2xl p-6 flex flex-col justify-between h-32 relative overflow-hidden border border-gray-200 shadow-sm transition-transform hover:scale-[1.02]">
             <div className="flex items-center gap-2 z-10">
               <div className="p-2 bg-red-500 rounded-full text-white">
                 <FaWallet />
@@ -390,13 +414,13 @@ const Dashboard = () => {
             <h2 className="text-2xl font-bold text-gray-900 z-10">
               {formatCurrency(summaryStats.expense)}
             </h2>
-            <div className="absolute right-0 bottom-0 opacity-10">
-              <FaArrowDown size={100} />
+            <div className="absolute right-0 bottom-0 opacity-10 text-red-500">
+              <FaArrowDown size={80} />
             </div>
           </div>
 
           {/* Balance Card */}
-          <div className="bg-gray-200 rounded-2xl p-6 flex flex-col justify-between h-32 relative overflow-hidden border border-gray-300">
+          <div className="bg-white rounded-2xl p-6 flex flex-col justify-between h-32 relative overflow-hidden border border-gray-200 shadow-sm sm:col-span-2 lg:col-span-1 transition-transform hover:scale-[1.02]">
             <div className="flex items-center gap-2 z-10">
               <div className="p-2 bg-green-500 rounded-full text-white">
                 <FaWallet />
@@ -411,25 +435,23 @@ const Dashboard = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* --- OVERVIEW GRAPH (Main - Left 2/3) --- */}
-          <div className="lg:col-span-2 bg-gray-100 rounded-2xl p-6 border border-gray-200 shadow-sm flex flex-col">
-            <h2 className="text-lg font-bold text-gray-800 mb-4">
-              Overview{" "}
-              <span className="text-sm font-normal text-gray-500 ml-2">
-                (
+          <div className="lg:col-span-2 bg-white rounded-2xl p-4 md:p-6 border border-gray-200 shadow-sm flex flex-col min-h-[400px]">
+            <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+              Overview
+              <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
                 {selectedMonthIndex === null
                   ? "Yearly View"
                   : MONTHS[selectedMonthIndex]}
-                )
               </span>
             </h2>
 
             {/* Chart container with fixed height and width */}
-            <div className="flex-1 overflow-x-auto pb-2 scrollbar-hide h-300 ">
+            <div className="flex-1 overflow-x-auto pb-2 scrollbar-hide">
               <div
                 style={{
                   width: "100%",
-                  minWidth: selectedMonthIndex !== null ? "1200px" : "100%",
-                  height: "100%",
+                  minWidth: selectedMonthIndex !== null ? "800px" : "100%",
+                  height: "300px",
                 }}
               >
                 <ResponsiveContainer width="100%" height="100%">
@@ -443,7 +465,7 @@ const Dashboard = () => {
                       dataKey="name"
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: "#6b7280", fontSize: 12 }}
+                      tick={{ fill: "#6b7280", fontSize: 10 }}
                     />
                     <YAxis hide />
                     <Tooltip
@@ -475,20 +497,20 @@ const Dashboard = () => {
           {/* --- RIGHT COLUMN (Activity & Comparison) --- */}
           <div className="flex flex-col gap-6">
             {/* Activity Sphere */}
-            <div className="bg-gray-100 rounded-2xl p-6 border border-gray-200 shadow-sm h-[300px] relative flex justify-center items-center">
+            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm h-[300px] relative flex justify-center items-center overflow-hidden">
               <h2 className="absolute top-4 left-6 text-lg font-bold text-gray-800">
                 Activity
               </h2>
 
-              <div className="relative w-full h-full flex justify-center items-center">
+              <div className="relative w-full h-full flex justify-center items-center scale-75 md:scale-100">
                 {/* Income Sphere */}
                 <div
                   className="rounded-full bg-blue-500 text-white flex flex-col justify-center items-center absolute shadow-lg transition-all duration-500 opacity-90"
                   style={{
                     width: sphereSizes.income,
                     height: sphereSizes.income,
-                    top: "20%",
-                    right: "10%",
+                    top: "15%",
+                    right: "5%",
                     zIndex: 10,
                   }}
                 >
@@ -505,7 +527,7 @@ const Dashboard = () => {
                     width: sphereSizes.expense,
                     height: sphereSizes.expense,
                     top: "10%",
-                    left: "10%",
+                    left: "5%",
                     zIndex: 5,
                   }}
                 >
@@ -517,7 +539,7 @@ const Dashboard = () => {
 
                 {/* Balance Sphere */}
                 <div
-                  className="rounded-full bg-gray-200 text-gray-700 border-2 border-white flex flex-col justify-center items-center absolute shadow-xl transition-all duration-500"
+                  className="rounded-full bg-gray-100 text-gray-700 border-2 border-white flex flex-col justify-center items-center absolute shadow-xl transition-all duration-500"
                   style={{
                     width: sphereSizes.balance,
                     height: sphereSizes.balance,
@@ -534,12 +556,12 @@ const Dashboard = () => {
             </div>
 
             {/* Comparison Graph */}
-            <div className="bg-gray-100 rounded-2xl p-6 border border-gray-200 shadow-sm h-[200px] flex flex-col">
-              <h2 className="text-sm font-bold text-gray-800 mb-2">
+            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm h-[250px] flex flex-col">
+              <h2 className="text-sm font-bold text-gray-800 mb-4">
                 Comparison (Month)
               </h2>
               <div className="flex-1">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="80%">
                   <AreaChart data={comparisonStats}>
                     <defs>
                       <linearGradient id="colorInc" x1="0" y1="0" x2="0" y2="1">
@@ -596,88 +618,92 @@ const Dashboard = () => {
         </div>
 
         {/* --- TRANSACTION HISTORY --- */}
-        <div className="bg-gray-100 rounded-2xl p-6 border border-gray-200 shadow-sm">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold text-gray-800 mb-6">
+        <div className="bg-white rounded-2xl p-4 md:p-6 border border-gray-200 shadow-sm">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+            <h2 className="text-lg font-bold text-gray-800">
               Transaction History
             </h2>
-            <div className="flex bg-blue-500 p-1 rounded-lg w-60">
-              <div className="relative ml-4 flex items-center">
+            <div className="w-full sm:w-60 flex bg-gray-100 p-1 rounded-lg">
+              <div className="relative flex-1 flex items-center">
                 <input
                   type="text"
-                  placeholder="Search"
-                  className="pl-10 pr-4 py-2 rounded-lg border-none focus:ring-2 placeholder-[#ffffff] focus:ring-blue-300 outline-none w-54 text-sm text-gray-700"
+                  placeholder="Filter by source..."
+                  className="pl-10 pr-4 py-2 rounded-lg border-none focus:ring-2 placeholder-gray-400 focus:ring-blue-300 outline-none w-full text-sm text-gray-700 bg-transparent"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                <FaSearch className="absolute left-3 text-white" />
+                <FaSearch className="absolute left-3 text-gray-400" />
               </div>
             </div>
           </div>
 
           {/* History table */}
-          <div className="overflow-x-auto max-h-96 overflow-y-scroll">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-gray-300 text-xs text-gray-500 uppercase tracking-wider sticky top-0 bg-gray-100">
-                  <th className="pb-4 pl-4">Description</th>
-                  <th className="pb-4">Date</th>
-                  <th className="pb-4">Type</th>
-                  <th className="pb-4 text-right pr-4">Amount</th>
-                </tr>
-              </thead>
-              <tbody className="text-sm text-gray-700">
-                {filteredTransactions.length === 0 ? (
-                  <tr>
-                    <td colSpan="4" className="text-center py-8 text-gray-400">
-                      No transactions found matching your search.
-                    </td>
+          <div className="overflow-x-auto -mx-4 md:mx-0">
+            <div className="min-w-[600px] px-4 md:px-0">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-gray-100 text-[10px] md:text-xs text-gray-500 uppercase tracking-wider sticky top-0 bg-white shadow-[0_1px_0_rgba(0,0,0,0.05)]">
+                    <th className="pb-4 pl-4 font-semibold">Description</th>
+                    <th className="pb-4 font-semibold">Date</th>
+                    <th className="pb-4 font-semibold">Type</th>
+                    <th className="pb-4 text-right pr-4 font-semibold">Amount</th>
                   </tr>
-                ) : (
-                  filteredTransactions.map((t, index) => (
-                    <tr
-                      // Use a combination of keys for uniqueness, preferring _id if it exists (from DB)
-                      key={t._id || `${t.source}-${t.type}-${index}`}
-                      className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
-                    >
-                      <td className="py-4 pl-4 flex items-center gap-3">
-                        <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs ${
-                            t.type === "income" ? "bg-blue-400" : "bg-red-400"
-                          }`}
-                        >
-                          {t.source.charAt(0).toUpperCase()}
+                </thead>
+                <tbody className="text-xs md:text-sm text-gray-700">
+                  {filteredTransactions.length === 0 ? (
+                    <tr>
+                      <td colSpan="4" className="text-center py-12 text-gray-400">
+                        <div className="flex flex-col items-center gap-2">
+                          <FaSearch size={24} className="opacity-20" />
+                          <p>No transactions found matching your search.</p>
                         </div>
-                        <span className="font-semibold">{t.source}</span>
-                        {t.description && (
-                          <span className="text-gray-400 text-xs hidden sm:inline">
-                            - {t.description}
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-4">
-                        {new Date(t.date).toLocaleDateString()}
-                      </td>
-                      <td className="py-4 capitalize">
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                            t.type === "income"
-                              ? "bg-blue-100 text-blue-700"
-                              : "bg-red-100 text-red-700"
-                          }`}
-                        >
-                          {t.type}
-                        </span>
-                      </td>
-                      <td className="py-4 text-right pr-4 font-bold">
-                        {t.type === "income" ? "+" : "-"}
-                        {formatCurrency(t.amount)}
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    filteredTransactions.map((t, index) => (
+                      <tr
+                        key={t._id || `${t.source}-${t.type}-${index}`}
+                        className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
+                      >
+                        <td className="py-4 pl-4 flex items-center gap-3">
+                          <div
+                            className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex-shrink-0 flex items-center justify-center text-white text-[10px] md:text-xs font-bold ${t.type === "income" ? "bg-blue-500" : "bg-red-400"
+                              }`}
+                          >
+                            {t.source.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-900">{t.source}</p>
+                            {t.description && (
+                              <p className="text-gray-400 text-[10px] md:text-xs truncate max-w-[150px] md:max-w-xs">
+                                {t.description}
+                              </p>
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-4 text-gray-500 whitespace-nowrap">
+                          {new Date(t.date).toLocaleDateString()}
+                        </td>
+                        <td className="py-4">
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] md:text-xs font-bold border ${t.type === "income"
+                                ? "bg-blue-50 text-blue-600 border-blue-100"
+                                : "bg-red-50 text-red-500 border-red-100"
+                              }`}
+                          >
+                            {t.type.toUpperCase()}
+                          </span>
+                        </td>
+                        <td className={`py-4 text-right pr-4 font-bold ${t.type === 'income' ? 'text-blue-600' : 'text-gray-900'}`}>
+                          {t.type === "income" ? "+" : "-"}
+                          {formatCurrency(t.amount)}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

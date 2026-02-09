@@ -22,7 +22,6 @@
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
   z-index: 50;
-  /* Make sure this is high enough! */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -58,4 +57,15 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

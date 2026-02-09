@@ -198,56 +198,56 @@ const Income = () => {
   };
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
-      <div className="flex justify-between items-center mb-8">
+    <div className="p-4 md:p-8 bg-gray-50 min-h-screen">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Income Overview</h1>
-          <p className="text-gray-500">Track your earnings over time</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Income Overview</h1>
+          <p className="text-sm md:text-base text-gray-500">Track your earnings over time</p>
         </div>
         <AddIncome onSaveSuccess={loadData} />
       </div>
 
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-green-600 mb-8">
+      <div className="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-green-600 mb-8">
         <div className="mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">Analytics</h2>
+          <h2 className="text-lg md:text-xl font-semibold text-gray-800">Analytics</h2>
         </div>
         <div
           ref={scrollContainerRef}
           className="overflow-x-auto pb-4 scrollbar-hide"
-          style={{ cursor: "pointer" }}
         >
           {chartData.length === 0 ? (
-            <div className="text-center py-20 bg-gray-100 rounded-lg">
-              <p className="text-gray-600 text-xl font-medium">
+            <div className="text-center py-12 md:py-20 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+              <p className="text-gray-600 text-lg md:text-xl font-medium px-4">
                 Enter new data to get started and view your earning trends!
               </p>
-              <p className="text-gray-400 mt-2">
+              <p className="text-gray-400 mt-2 text-sm md:text-base">
                 Click &apos;+ Add Income&apos; to create your first entry.
               </p>
             </div>
           ) : (
             <div
               style={{
-                width: `${Math.max(800, chartData.length * BAR_WIDTH)}px`,
-                height: "350px",
+                width: `${Math.max(window.innerWidth < 768 ? 600 : 800, chartData.length * (window.innerWidth < 768 ? 60 : 100))}px`,
+                height: "300px",
                 padding: "20px",
                 borderRadius: "16px",
-                background: "#ebffe5",
+                background: "#f0fdf4",
               }}
             >
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} barSize={60}>
+                <BarChart data={chartData} barSize={window.innerWidth < 768 ? 30 : 60}>
                   <YAxis
                     domain={yAxisDomain}
                     axisLine={false}
                     tickLine={false}
                     tickFormatter={(value) => formatCurrency(value)}
+                    tick={{ fontSize: 10 }}
                   />
                   <XAxis
                     dataKey="day"
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: "#6B7280", fontSize: 14, dy: 10 }}
+                    tick={{ fill: "#6B7280", fontSize: 12, dy: 10 }}
                   />
                   <Tooltip
                     content={<CustomTooltip />}
@@ -255,8 +255,8 @@ const Income = () => {
                   />
                   <Bar
                     dataKey="amount"
-                    fill="#00c950"
-                    radius={[10, 10, 0, 0]}
+                    fill="#10b981"
+                    radius={[8, 8, 0, 0]}
                   />
                 </BarChart>
               </ResponsiveContainer>
@@ -265,65 +265,71 @@ const Income = () => {
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-green-600">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6">
+      <div className="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-green-600 overflow-hidden">
+        <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-6">
           Income History
         </h2>
-        {transactions.length > 0 && (
-          <div className="grid grid-cols-5 text-gray-400 font-medium mb-4 px-4">
-            <span>Source</span>
-            <span>Date</span>
-            <span>Amount</span>
-            <span className="text-right">Status (% vs Previous)</span>
-            <span className="text-right">Actions</span>
-          </div>
-        )}
-        <div className="flex flex-col gap-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-          {transactions.length === 0 ? (
-            <p className="text-center text-gray-400 py-10">
-              No valid income records found.
-            </p>
-          ) : (
-            transactions
-              .slice()
-              .reverse()
-              .map((item, index) => (
-                <div
-                  key={item._id || item.id}
-                  className="grid grid-cols-5 items-center bg-gray-50 p-4 rounded-xl hover:bg-gray-100 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                      <FaMoneyBillWave />
-                    </div>
-                    <span className="font-bold text-gray-700 capitalize">
-                      {item.source}
-                    </span>
-                  </div>
-                  <span className="text-gray-500 font-medium">
-                    {new Date(item.date).toLocaleDateString()}
-                  </span>
-                  <span className="font-bold text-green-600">
-                    {formatCurrency(item.amount || 0)}
-                  </span>
-                  <div className="text-right">
-                    {getStatusBadge(item, index)}
-                  </div>
-                  <div className="text-right">
-                    <button
-                      onClick={() => handleDelete(item._id || item.id)}
-                      className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition-colors"
-                      aria-label="Delete Income"
+
+        <div className="overflow-x-auto -mx-4 md:mx-0">
+          <div className="min-w-[700px] px-4 md:px-0">
+            {transactions.length > 0 && (
+              <div className="grid grid-cols-5 text-gray-400 text-xs md:text-sm font-medium mb-4 px-4 uppercase tracking-wider">
+                <span>Source</span>
+                <span>Date</span>
+                <span>Amount</span>
+                <span className="text-right">Status</span>
+                <span className="text-right">Actions</span>
+              </div>
+            )}
+            <div className="flex flex-col gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+              {transactions.length === 0 ? (
+                <p className="text-center text-gray-400 py-10">
+                  No valid income records found.
+                </p>
+              ) : (
+                transactions
+                  .slice()
+                  .reverse()
+                  .map((item, index) => (
+                    <div
+                      key={item._id || item.id}
+                      className="grid grid-cols-5 items-center bg-gray-50 p-4 rounded-xl hover:bg-green-50/50 transition-colors"
                     >
-                      <FaTrash size={16} />
-                    </button>
-                  </div>
-                </div>
-              ))
-          )}
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 flex-shrink-0">
+                          <FaMoneyBillWave size={window.innerWidth < 768 ? 14 : 18} />
+                        </div>
+                        <span className="font-bold text-gray-700 capitalize truncate text-sm md:text-base">
+                          {item.source}
+                        </span>
+                      </div>
+                      <span className="text-gray-500 font-medium text-xs md:text-sm">
+                        {new Date(item.date).toLocaleDateString()}
+                      </span>
+                      <span className="font-bold text-green-600 text-sm md:text-base">
+                        {formatCurrency(item.amount || 0)}
+                      </span>
+                      <div className="text-right">
+                        {getStatusBadge(item, index)}
+                      </div>
+                      <div className="text-right">
+                        <button
+                          onClick={() => handleDelete(item._id || item.id)}
+                          className="text-red-400 hover:text-red-600 p-2 rounded-full hover:bg-red-50 transition-colors"
+                          aria-label="Delete Income"
+                        >
+                          <FaTrash size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 };
+
 export default Income;

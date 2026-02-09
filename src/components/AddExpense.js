@@ -1,13 +1,14 @@
 "use client";
 import React, { useState } from "react";
-import { IoIosClose } from "react-icons/io";
+import { FaPlus, FaTimes, FaWallet, FaCalendar } from "react-icons/fa";
 import Modal from "./Modal";
 import { useSession } from "next-auth/react";
 import { addTransaction } from "@/actions/transactionActions";
 
 const AddExpense = ({ onSaveSuccess }) => {
   const { data: session } = useSession();
-  const [open, setOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     amount: "",
     source: "",
@@ -15,23 +16,14 @@ const AddExpense = ({ onSaveSuccess }) => {
     description: "",
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-  const handleSave = async () => {
-    // Basic Validation
-    if (!formData.source || !formData.amount || !formData.date) {
-      alert("Please fill in all required fields.");
-      return;
-    }
     const parsedAmount = parseFloat(formData.amount);
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
       alert("Please enter a valid amount.");
+      setLoading(false);
       return;
     }
 
@@ -45,143 +37,150 @@ const AddExpense = ({ onSaveSuccess }) => {
 
     let saveSuccessful = false;
 
-    if (session) {
-      // 1. LOGGED IN: Save to MongoDB via Server Action
-      console.log("Saving expense to MongoDB...");
-      const result = await addTransaction(transactionData);
-
-      if (result.success) {
-        saveSuccessful = true;
+    try {
+      if (session) {
+        const result = await addTransaction(transactionData);
+        if (result.success) {
+          saveSuccessful = true;
+        } else {
+          alert("Failed to save expense: " + result.error);
+        }
       } else {
-        alert("Failed to save expense to the cloud: " + result.error);
+        const newTransaction = {
+          ...transactionData,
+          id: Date.now(),
+        };
+        const existingData = JSON.parse(localStorage.getItem("financeTrackerData")) || [];
+        existingData.push(newTransaction);
+        localStorage.setItem("financeTrackerData", JSON.stringify(existingData));
+        saveSuccessful = true;
       }
-    } else {
-      // 2. LOGGED OUT: Save to Local Storage
-      console.log("Saving expense to Local Storage...");
-      const newTransaction = {
-        ...transactionData,
-        id: Date.now(),
-      };
 
-      const existingData =
-        JSON.parse(localStorage.getItem("financeTrackerData")) || [];
-
-      existingData.push(newTransaction);
-      localStorage.setItem("financeTrackerData", JSON.stringify(existingData));
-      saveSuccessful = true;
-    }
-
-    if (saveSuccessful) {
-      // Reset form and close modal
-      setFormData({
-        source: "",
-        amount: "",
-        date: new Date().toISOString().split("T")[0],
-        description: "",
-      });
-      setOpen(false);
-
-      if (onSaveSuccess) {
-        onSaveSuccess();
+      if (saveSuccessful) {
+        setFormData({
+          source: "",
+          amount: "",
+          date: new Date().toISOString().split("T")[0],
+          description: "",
+        });
+        setIsModalOpen(false);
+        if (onSaveSuccess) onSaveSuccess();
       }
+    } catch (error) {
+      console.error("Error saving expense:", error);
+      alert("An error occurred while saving.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div>
+    <div className="w-full sm:w-auto">
       <button
-        className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
-        onClick={() => setOpen(true)}
+        onClick={() => setIsModalOpen(true)}
+        className="bg-red-600 hover:bg-red-700 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg hover:shadow-red-200 active:scale-95 text-sm md:text-base w-full justify-center sm:w-auto"
       >
-        + Add Expense
+        <FaPlus /> <span>Add Expense</span>
       </button>
 
-      <Modal open={open} onClose={() => setOpen(false)}>
-        <div
-          className="bg-white rounded-xl shadow-2xl overflow-hidden w-[500px] z-50 relative"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="border-b border-gray-200 flex justify-between items-center py-4 px-6 mb-6">
-            <p className="font-semibold text-gray-800 text-2xl">Add Expense</p>
-            <IoIosClose
-              color="black"
-              size="36"
-              className="cursor-pointer hover:text-red-500"
-              onClick={() => setOpen(false)}
-            />
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <div className="p-6 md:p-8">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-800">New Expense Entry</h2>
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <FaTimes size={20} />
+            </button>
           </div>
 
-          <div className="px-6 pb-6 space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Expense Source:
-              </label>
-              <input
-                type="text"
-                name="source"
-                value={formData.source}
-                onChange={handleChange}
-                placeholder="e.g., Groceries, Rent, Fuel"
-                className="w-full border border-gray-300 p-2 rounded-md focus:ring-red-500 focus:border-red-500 text-gray-900"
-              />
+          <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <div className="space-y-2">
+                <label className="text-xs md:text-sm font-semibold text-gray-500 uppercase tracking-wider">
+                  Expense Source
+                </label>
+                <div className="relative group">
+                  <FaWallet className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-red-500 transition-colors" />
+                  <input
+                    type="text"
+                    placeholder="e.g. Rent, Grocery"
+                    className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl py-3 pl-12 pr-4 focus:bg-white focus:border-red-500 outline-none transition-all placeholder:text-gray-300 text-sm md:text-base text-black"
+                    value={formData.source}
+                    onChange={(e) => setFormData({ ...formData, source: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs md:text-sm font-semibold text-gray-500 uppercase tracking-wider">
+                  Amount
+                </label>
+                <div className="relative group">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400 group-focus-within:text-red-500">
+                    ₹
+                  </span>
+                  <input
+                    type="number"
+                    placeholder="0.00"
+                    className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl py-3 pl-10 pr-4 focus:bg-white focus:border-red-500 outline-none transition-all placeholder:text-gray-300 text-sm md:text-base text-black font-bold"
+                    value={formData.amount}
+                    onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                    step="0.01"
+                    required
+                  />
+                </div>
+              </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Amount (₹):
+            <div className="space-y-2">
+              <label className="text-xs md:text-sm font-semibold text-gray-500 uppercase tracking-wider">
+                Date
               </label>
-              <input
-                type="number"
-                name="amount"
-                value={formData.amount}
-                onChange={handleChange}
-                placeholder="e.g., 5000"
-                className="w-full border border-gray-300 p-2 rounded-md focus:ring-red-500 focus:border-red-500 text-gray-900"
-              />
+              <div className="relative group">
+                <FaCalendar className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-red-500 transition-colors" />
+                <input
+                  type="date"
+                  className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl py-3 pl-12 pr-4 focus:bg-white focus:border-red-500 outline-none transition-all text-sm md:text-base text-black"
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  required
+                />
+              </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Date:
+            <div className="space-y-2">
+              <label className="text-xs md:text-sm font-semibold text-gray-500 uppercase tracking-wider">
+                Description (Optional)
               </label>
-              <input
-                type="date"
-                name="date"
-                value={formData.date}
-                onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded-md focus:ring-red-500 focus:border-red-500 text-gray-900"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description (Optional):
-              </label>
-              <input
-                type="text"
-                name="description"
+              <textarea
+                placeholder="What was this for?"
+                rows="3"
+                className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl py-3 px-4 focus:bg-white focus:border-red-500 outline-none transition-all placeholder:text-gray-300 text-sm md:text-base text-black"
                 value={formData.description}
-                onChange={handleChange}
-                placeholder="e.g., Monthly utility payment"
-                className="w-full border border-gray-300 p-2 rounded-md focus:ring-red-500 focus:border-red-500 text-gray-900"
-              />
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              ></textarea>
             </div>
 
-            <div className="flex justify-end pt-4 space-x-3">
+            <div className="pt-4 flex flex-col md:flex-row gap-3">
               <button
-                onClick={() => setOpen(false)}
-                className="px-4 py-2 text-gray-600 border rounded-lg hover:bg-gray-100 transition-colors"
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="flex-1 px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 transition-colors order-2 md:order-1"
               >
                 Cancel
               </button>
               <button
-                onClick={handleSave}
-                className="px-4 py-2 text-white rounded-lg transition-colors bg-red-500 hover:bg-red-700"
+                type="submit"
+                disabled={loading}
+                className="flex-[2] bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-red-200 active:scale-95 disabled:opacity-50 disabled:scale-100 order-1 md:order-2"
               >
-                Save Expense
+                {loading ? "Saving..." : "Save Expense"}
               </button>
             </div>
-          </div>
+          </form>
         </div>
       </Modal>
     </div>
