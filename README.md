@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Finance Tracker
 
-## Getting Started
+A powerful, high-performance web application designed to help users regain consciousness of their financial health in the age of seamless digital transactions.
 
-First, run the development server:
+## 🚀 The Vision & Impact
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+In today's world of "one-click" payments and services like GPay, spending money has become almost frictionless. While convenient, this ease of transaction often leads to a loss of financial consciousness, where users lose track of their micro-expenditures and cumulative spending habits.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Finance Tracker** is built to solve this by:
+- **Promoting Mindfulness**: Forcing a deliberate action of logging transactions to help users stay aware of every rupee spent or earned.
+- **Cross-Device Accessibility**: Accessible from any preferred device, allowing users to log transactions on the go.
+- **Hybrid Data Storage**: Flexible data management that caters to both casual users and those seeking long-term synchronization.
+  - **Local System**: Data is stored securely in your browser's local storage for immediate use without an account.
+  - **Cloud Sync (MongoDB)**: Logged-in users can sync their data across devices using their Google ID, ensuring their financial history is never lost.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+![Mobile View1](public/Untitled.png)
+![Mobile View2](public/mb2.png)
+![Mobile View3](public/mb3.png)
+![Desktop View](public/dv.png)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+## 🛠 Technical Stack
 
-To learn more about Next.js, take a look at the following resources:
+This project leverages modern web technologies to provide a premium, responsive, and secure experience:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Framework**: [Next.js 14](https://nextjs.org/) (App Router) for a fast, SEO-friendly React foundation.
+- **Authentication**: [NextAuth.js](https://next-auth.js.org/) with Google Provider for secure, passwordless login.
+- **Database**: [MongoDB](https://www.mongodb.com/) with [Mongoose](https://mongoosejs.com/) for reliable and scalable data persistence.
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) for high-performance, utility-first UI design.
+- **Theming**: Custom Dark Mode infrastructure using CSS Variables and React Context for a seamless, high-contrast low-light experience.
+- **Data Visualization**: [Recharts](https://recharts.org/) for beautiful, interactive analytics, area charts, and bar graphs.
+- **Icons**: [React Icons](https://react-icons.github.io/react-icons/) for a consistent and intuitive visual language.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## ✨ Key Features
 
-## Deploy on Vercel
+- **Dashboard**: A bird's-eye view of your financial health with dynamic activity spheres, monthly comparisons, and detailed overview graphs.
+- **Income & Expense Management**: Dedicated modules to track earnings and spendings with real-time analytics and status badges.
+- **Dark Mode**: A beautiful, premium dark theme that respects system preferences and persists across sessions.
+- **Responsive Design**: Fully optimized for desktops, tablets, and smartphones.
+- **Search & Filter**: Quickly find any transaction in your history with real-time filtering.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🏁 Getting Started
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Prerequisites
+
+- Node.js 18.x or later
+- A MongoDB database (local or Atlas)
+- Google OAuth credentials (for authentication)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Configure your environment:
+   Create a `.env.local` file in the root directory and add:
+   ```env
+   MONGODB_URI=your_mongodb_uri
+   NEXTAUTH_SECRET=your_auth_secret
+   GOOGLE_CLIENT_ID=your_google_id
+   GOOGLE_CLIENT_SECRET=your_google_secret
+   NEXTAUTH_URL=http://localhost:3000
+   ```
+
+4. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to explore the app.
