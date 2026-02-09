@@ -21,13 +21,13 @@ const NavBar = () => {
         <>
           <Link
             href="/login"
-            className="bg-lightBlue py-1 px-6 rounded-md hover:mt-2 transition duration-300"
+            className="bg-lightBlue py-1 px-6 rounded-md hover:bg-lightBlue/80 transition duration-300"
           >
             Login
           </Link>
           <Link
             href="/signup"
-            className="bg-lightBlue py-1 px-6 rounded-md hover:mt-2 transition duration-300"
+            className="bg-lightBlue py-1 px-6 rounded-md hover:bg-lightBlue/80 transition duration-300"
           >
             Sign up
           </Link>
