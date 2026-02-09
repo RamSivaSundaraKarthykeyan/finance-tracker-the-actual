@@ -595,7 +595,10 @@ const Dashboard = () => {
                       axisLine={false}
                       tickLine={false}
                     />
-                    <Tooltip />
+                    <Tooltip
+                      content={<CustomTooltip />}
+                      cursor={{ fill: "transparent" }}
+                    />
                     <Area
                       type="monotone"
                       dataKey="income"
