@@ -13,9 +13,7 @@ In today's world of "one-click" payments and services like GPay, spending money 
   - **Local System**: Data is stored securely in your browser's local storage for immediate use without an account.
   - **Cloud Sync (MongoDB)**: Logged-in users can sync their data across devices using their Google ID, ensuring their financial history is never lost.
 
-![Mobile View1](public/Untitled.jpg)
 ![Mobile View2](public/mb2.jpg)
-![Mobile View3](public/mb3.jpg)
 ![Desktop View](public/dv.png)
 
 
