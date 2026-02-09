@@ -14,7 +14,7 @@ const Modal = ({ isOpen, onClose, children }) => {
       {/* The child (modal content) itself also has z-50 in AddIncome/AddExpense */}
       {/* This inner div provides the modal's content styling and width constraints */}
       <div
-        className={`bg-white rounded-2xl shadow-2xl relative z-60 w-full max-w-[500px] px-4 transition-all duration-300 transform ${isOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
+        className={`bg-card-bg rounded-2xl shadow-2xl relative z-60 w-full max-w-[500px] px-4 transition-all duration-300 transform ${isOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
           }`}
         onClick={(e) => e.stopPropagation()} // Prevent clicks on modal content from closing the modal
       >

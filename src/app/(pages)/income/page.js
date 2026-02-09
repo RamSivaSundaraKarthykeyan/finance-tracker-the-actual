@@ -134,9 +134,9 @@ const Income = () => {
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-2 border border-gray-200 shadow-md rounded-md text-sm">
-          <p className="font-semibold text-black">{label}</p>
-          <p className="text-green-600 font-bold">
+        <div className="bg-card-bg p-2 border border-card-border shadow-md rounded-md text-sm transition-colors">
+          <p className="font-semibold text-foreground">{label}</p>
+          <p className="text-green-500 font-bold">
             {formatCurrency(payload[0].value)}
           </p>
         </div>
@@ -151,7 +151,7 @@ const Income = () => {
 
     if (originalIndex === 0) {
       return (
-        <span className="bg-gray-100 border border-gray-300 px-4 py-1 rounded-full text-sm font-semibold text-gray-600 shadow-sm">
+        <span className="bg-background border border-card-border px-4 py-1 rounded-full text-sm font-semibold text-gray-500 shadow-sm transition-colors">
           New Entry
         </span>
       );
@@ -163,7 +163,7 @@ const Income = () => {
 
     if (previousAmount === 0 || currentAmount === 0) {
       return (
-        <span className="bg-gray-100 border border-gray-300 px-4 py-1 rounded-full text-sm font-semibold text-gray-600 shadow-sm">
+        <span className="bg-background border border-card-border px-4 py-1 rounded-full text-sm font-semibold text-gray-500 shadow-sm transition-colors">
           N/A
         </span>
       );
@@ -176,15 +176,15 @@ const Income = () => {
 
     if (isFlat) {
       return (
-        <span className="bg-gray-100 border border-gray-300 px-4 py-1 rounded-full text-sm font-semibold text-gray-600 shadow-sm">
+        <span className="bg-background border border-card-border px-4 py-1 rounded-full text-sm font-semibold text-gray-500 shadow-sm transition-colors">
           No Change
         </span>
       );
     }
 
     const badgeColor = isIncrease
-      ? "bg-green-100 border-green-300 text-green-600"
-      : "bg-red-100 border-red-300 text-red-600";
+      ? "bg-green-500/10 border-green-500/30 text-green-500"
+      : "bg-red-500/10 border-red-500/30 text-red-500";
     const directionIcon = isIncrease ? "▲" : "▼";
     const formattedPercent = Math.abs(percentageChange).toFixed(1);
 
@@ -198,29 +198,29 @@ const Income = () => {
   };
 
   return (
-    <div className="p-4 md:p-8 bg-gray-50 min-h-screen">
+    <div className="p-4 md:p-8 bg-background min-h-screen transition-colors duration-300">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Income Overview</h1>
-          <p className="text-sm md:text-base text-gray-500">Track your earnings over time</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Income Overview</h1>
+          <p className="text-sm md:text-base text-gray-400">Track your earnings over time</p>
         </div>
         <AddIncome onSaveSuccess={loadData} />
       </div>
 
-      <div className="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-green-600 mb-8">
+      <div className="bg-card-bg p-4 md:p-6 rounded-2xl shadow-sm border border-green-600/30 mb-8 transition-colors">
         <div className="mb-4">
-          <h2 className="text-lg md:text-xl font-semibold text-gray-800">Analytics</h2>
+          <h2 className="text-lg md:text-xl font-semibold text-foreground">Analytics</h2>
         </div>
         <div
           ref={scrollContainerRef}
           className="overflow-x-auto pb-4 scrollbar-hide"
         >
           {chartData.length === 0 ? (
-            <div className="text-center py-12 md:py-20 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-              <p className="text-gray-600 text-lg md:text-xl font-medium px-4">
+            <div className="text-center py-12 md:py-20 bg-background rounded-lg border-2 border-dashed border-card-border">
+              <p className="text-foreground/80 text-lg md:text-xl font-medium px-4">
                 Enter new data to get started and view your earning trends!
               </p>
-              <p className="text-gray-400 mt-2 text-sm md:text-base">
+              <p className="text-gray-500 mt-2 text-sm md:text-base">
                 Click &apos;+ Add Income&apos; to create your first entry.
               </p>
             </div>
@@ -231,7 +231,8 @@ const Income = () => {
                 height: "300px",
                 padding: "20px",
                 borderRadius: "16px",
-                background: "#f0fdf4",
+                background: "var(--background)",
+                border: "1px solid var(--card-border)",
               }}
             >
               <ResponsiveContainer width="100%" height="100%">
@@ -247,7 +248,7 @@ const Income = () => {
                     dataKey="day"
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: "#6B7280", fontSize: 12, dy: 10 }}
+                    tick={{ fill: "var(--foreground)", fontSize: 12, dy: 10, opacity: 0.6 }}
                   />
                   <Tooltip
                     content={<CustomTooltip />}
@@ -265,8 +266,8 @@ const Income = () => {
         </div>
       </div>
 
-      <div className="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-green-600 overflow-hidden">
-        <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-6">
+      <div className="bg-card-bg p-4 md:p-6 rounded-2xl shadow-sm border border-green-600/30 overflow-hidden transition-colors">
+        <h2 className="text-lg md:text-xl font-semibold text-foreground mb-6">
           Income History
         </h2>
 
@@ -293,13 +294,13 @@ const Income = () => {
                   .map((item, index) => (
                     <div
                       key={item._id || item.id}
-                      className="grid grid-cols-5 items-center bg-gray-50 p-4 rounded-xl hover:bg-green-50/50 transition-colors"
+                      className="grid grid-cols-5 items-center bg-background p-4 rounded-xl hover:bg-green-600/5 border border-card-border transition-colors"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 flex-shrink-0">
+                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-green-600/20 flex items-center justify-center text-green-500 flex-shrink-0">
                           <FaMoneyBillWave size={window.innerWidth < 768 ? 14 : 18} />
                         </div>
-                        <span className="font-bold text-gray-700 capitalize truncate text-sm md:text-base">
+                        <span className="font-bold text-foreground capitalize truncate text-sm md:text-base">
                           {item.source}
                         </span>
                       </div>
@@ -315,7 +316,7 @@ const Income = () => {
                       <div className="text-right">
                         <button
                           onClick={() => handleDelete(item._id || item.id)}
-                          className="text-red-400 hover:text-red-600 p-2 rounded-full hover:bg-red-50 transition-colors"
+                          className="text-red-400 hover:text-red-500 p-2 rounded-full hover:bg-red-500/10 transition-colors"
                           aria-label="Delete Income"
                         >
                           <FaTrash size={14} />

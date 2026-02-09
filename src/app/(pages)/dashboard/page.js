@@ -286,19 +286,19 @@ const Dashboard = () => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white p-3 border border-gray-200 shadow-lg rounded-lg text-sm z-50">
-          <p className="font-bold text-gray-800 mb-2">
+        <div className="bg-card-bg p-3 border border-card-border shadow-lg rounded-lg text-sm z-50 transition-colors">
+          <p className="font-bold text-foreground mb-2">
             {selectedMonthIndex === null
               ? label
               : `${MONTHS[selectedMonthIndex]} ${label}`}
           </p>
-          <p className="text-blue-600">Income: {formatCurrency(data.income)}</p>
-          <p className="text-red-500">
+          <p className="text-blue-500 font-medium">Income: {formatCurrency(data.income)}</p>
+          <p className="text-red-400 font-medium">
             Expense: {formatCurrency(data.expense)}
           </p>
-          <div className="border-t my-1"></div>
+          <div className="border-t border-card-border my-1"></div>
           <p
-            className={`font-semibold ${data.balance >= 0 ? "text-green-600" : "text-red-600"
+            className={`font-bold ${data.balance >= 0 ? "text-green-500" : "text-red-400"
               }`}
           >
             Balance: {formatCurrency(data.balance)}
@@ -310,26 +310,26 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
+    <div className="flex flex-col md:flex-row min-h-screen bg-background transition-colors duration-300">
       {/* --- LEFT SIDEBAR (Month Selector) - Desktop --- */}
-      <div className="w-24 bg-white border-r border-gray-200 flex flex-col items-center py-6 gap-2 sticky top-0 h-screen overflow-y-auto hidden md:flex">
+      <div className="w-24 bg-card-bg border-r border-card-border flex flex-col items-center py-6 gap-2 sticky top-0 h-screen overflow-y-auto hidden md:flex transition-colors">
         <button
           onClick={() => setSelectedMonthIndex(null)}
           className={`w-16 py-2 rounded-xl text-sm font-semibold transition-all ${selectedMonthIndex === null
             ? "bg-blue-600 text-white shadow-md"
-            : "text-gray-500 hover:bg-gray-100"
+            : "text-gray-500 hover:bg-background"
             }`}
         >
           Year
         </button>
-        <div className="w-10 border-b border-gray-200 my-2"></div>
+        <div className="w-10 border-b border-card-border my-2"></div>
         {MONTHS.map((m, i) => (
           <button
             key={m}
             onClick={() => setSelectedMonthIndex(i)}
             className={`w-16 py-3 rounded-xl text-sm font-medium transition-all ${selectedMonthIndex === i
-              ? "bg-blue-100 text-blue-700 border-2 border-blue-200"
-              : "text-gray-500 hover:bg-gray-50"
+              ? "bg-blue-600/20 text-blue-500 border-2 border-blue-500/30"
+              : "text-gray-500 hover:bg-background"
               }`}
           >
             {m}
@@ -338,13 +338,13 @@ const Dashboard = () => {
       </div>
 
       {/* --- MOBILE MONTH SELECTOR --- */}
-      <div className="md:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-30">
+      <div className="md:hidden bg-card-bg border-b border-card-border p-4 sticky top-0 z-30 transition-colors">
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
           <button
             onClick={() => setSelectedMonthIndex(null)}
             className={`flex-shrink-0 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${selectedMonthIndex === null
               ? "bg-blue-600 text-white shadow-md"
-              : "bg-gray-100 text-gray-500"
+              : "bg-background text-gray-500 border border-card-border"
               }`}
           >
             Year
@@ -354,8 +354,8 @@ const Dashboard = () => {
               key={m}
               onClick={() => setSelectedMonthIndex(i)}
               className={`flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedMonthIndex === i
-                ? "bg-blue-100 text-blue-700 border border-blue-200"
-                : "bg-gray-100 text-gray-500"
+                ? "bg-blue-600/20 text-blue-500 border border-blue-500/30"
+                : "bg-background text-gray-500 border border-card-border"
                 }`}
             >
               {m}
@@ -368,7 +368,7 @@ const Dashboard = () => {
       <div className="flex-1 p-4 md:p-8 overflow-x-hidden">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Dashboard</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Dashboard</h1>
 
           {/* Top Tabs & Search Bar */}
           <div className="w-full sm:w-auto flex bg-blue-500 p-1 rounded-lg">
@@ -388,14 +388,14 @@ const Dashboard = () => {
         {/* --- TOP STATS CARDS --- */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
           {/* Income Card */}
-          <div className="bg-white rounded-2xl p-6 flex flex-col justify-between h-32 relative overflow-hidden border border-gray-200 shadow-sm transition-transform hover:scale-[1.02]">
+          <div className="bg-card-bg rounded-2xl p-6 flex flex-col justify-between h-32 relative overflow-hidden border border-card-border shadow-sm transition-transform hover:scale-[1.02]">
             <div className="flex items-center gap-2 z-10">
               <div className="p-2 bg-blue-500 rounded-full text-white">
                 <FaWallet />
               </div>
-              <span className="font-semibold text-gray-600">Income</span>
+              <span className="font-semibold text-gray-400">Income</span>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 z-10">
+            <h2 className="text-2xl font-bold text-foreground z-10">
               {formatCurrency(summaryStats.income)}
             </h2>
             <div className="absolute right-0 bottom-0 opacity-10 text-blue-500">
@@ -404,14 +404,14 @@ const Dashboard = () => {
           </div>
 
           {/* Expense Card */}
-          <div className="bg-white rounded-2xl p-6 flex flex-col justify-between h-32 relative overflow-hidden border border-gray-200 shadow-sm transition-transform hover:scale-[1.02]">
+          <div className="bg-card-bg rounded-2xl p-6 flex flex-col justify-between h-32 relative overflow-hidden border border-card-border shadow-sm transition-transform hover:scale-[1.02]">
             <div className="flex items-center gap-2 z-10">
               <div className="p-2 bg-red-500 rounded-full text-white">
                 <FaWallet />
               </div>
-              <span className="font-semibold text-gray-600">Expense</span>
+              <span className="font-semibold text-gray-400">Expense</span>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 z-10">
+            <h2 className="text-2xl font-bold text-foreground z-10">
               {formatCurrency(summaryStats.expense)}
             </h2>
             <div className="absolute right-0 bottom-0 opacity-10 text-red-500">
@@ -420,14 +420,14 @@ const Dashboard = () => {
           </div>
 
           {/* Balance Card */}
-          <div className="bg-white rounded-2xl p-6 flex flex-col justify-between h-32 relative overflow-hidden border border-gray-200 shadow-sm sm:col-span-2 lg:col-span-1 transition-transform hover:scale-[1.02]">
+          <div className="bg-card-bg rounded-2xl p-6 flex flex-col justify-between h-32 relative overflow-hidden border border-card-border shadow-sm sm:col-span-2 lg:col-span-1 transition-transform hover:scale-[1.02]">
             <div className="flex items-center gap-2 z-10">
               <div className="p-2 bg-green-500 rounded-full text-white">
                 <FaWallet />
               </div>
-              <span className="font-semibold text-gray-600">Total Balance</span>
+              <span className="font-semibold text-gray-400">Total Balance</span>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 z-10">
+            <h2 className="text-2xl font-bold text-foreground z-10">
               {formatCurrency(summaryStats.balance)}
             </h2>
           </div>
@@ -435,10 +435,10 @@ const Dashboard = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* --- OVERVIEW GRAPH (Main - Left 2/3) --- */}
-          <div className="lg:col-span-2 bg-white rounded-2xl p-4 md:p-6 border border-gray-200 shadow-sm flex flex-col min-h-[400px]">
-            <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <div className="lg:col-span-2 bg-card-bg rounded-2xl p-4 md:p-6 border border-card-border shadow-sm flex flex-col min-h-[400px] transition-colors">
+            <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
               Overview
-              <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+              <span className="text-xs font-normal text-gray-400 bg-background px-2 py-1 rounded-md border border-card-border">
                 {selectedMonthIndex === null
                   ? "Yearly View"
                   : MONTHS[selectedMonthIndex]}
@@ -459,13 +459,13 @@ const Dashboard = () => {
                     <CartesianGrid
                       strokeDasharray="3 3"
                       vertical={false}
-                      stroke="#e5e7eb"
+                      stroke="var(--card-border)"
                     />
                     <XAxis
                       dataKey="name"
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: "#6b7280", fontSize: 10 }}
+                      tick={{ fill: "var(--foreground)", fontSize: 10, opacity: 0.5 }}
                     />
                     <YAxis hide />
                     <Tooltip
@@ -497,8 +497,8 @@ const Dashboard = () => {
           {/* --- RIGHT COLUMN (Activity & Comparison) --- */}
           <div className="flex flex-col gap-6">
             {/* Activity Sphere */}
-            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm h-[300px] relative flex justify-center items-center overflow-hidden">
-              <h2 className="absolute top-4 left-6 text-lg font-bold text-gray-800">
+            <div className="bg-card-bg rounded-2xl p-6 border border-card-border shadow-sm h-[300px] relative flex justify-center items-center overflow-hidden transition-colors">
+              <h2 className="absolute top-4 left-6 text-lg font-bold text-foreground">
                 Activity
               </h2>
 
@@ -539,7 +539,7 @@ const Dashboard = () => {
 
                 {/* Balance Sphere */}
                 <div
-                  className="rounded-full bg-gray-100 text-gray-700 border-2 border-white flex flex-col justify-center items-center absolute shadow-xl transition-all duration-500"
+                  className="rounded-full bg-background text-foreground border-2 border-card-border flex flex-col justify-center items-center absolute shadow-xl transition-all duration-500"
                   style={{
                     width: sphereSizes.balance,
                     height: sphereSizes.balance,
@@ -556,8 +556,8 @@ const Dashboard = () => {
             </div>
 
             {/* Comparison Graph */}
-            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm h-[250px] flex flex-col">
-              <h2 className="text-sm font-bold text-gray-800 mb-4">
+            <div className="bg-card-bg rounded-2xl p-6 border border-card-border shadow-sm h-[250px] flex flex-col transition-colors">
+              <h2 className="text-sm font-bold text-foreground mb-4">
                 Comparison (Month)
               </h2>
               <div className="flex-1">
@@ -618,17 +618,17 @@ const Dashboard = () => {
         </div>
 
         {/* --- TRANSACTION HISTORY --- */}
-        <div className="bg-white rounded-2xl p-4 md:p-6 border border-gray-200 shadow-sm">
+        <div className="bg-card-bg rounded-2xl p-4 md:p-6 border border-card-border shadow-sm transition-colors">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-            <h2 className="text-lg font-bold text-gray-800">
+            <h2 className="text-lg font-bold text-foreground">
               Transaction History
             </h2>
-            <div className="w-full sm:w-60 flex bg-gray-100 p-1 rounded-lg">
+            <div className="w-full sm:w-60 flex bg-background p-1 rounded-lg border border-card-border">
               <div className="relative flex-1 flex items-center">
                 <input
                   type="text"
                   placeholder="Filter by source..."
-                  className="pl-10 pr-4 py-2 rounded-lg border-none focus:ring-2 placeholder-gray-400 focus:ring-blue-300 outline-none w-full text-sm text-gray-700 bg-transparent"
+                  className="pl-10 pr-4 py-2 rounded-lg border-none focus:ring-2 placeholder-gray-500 focus:ring-blue-300 outline-none w-full text-sm text-foreground bg-transparent"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -642,14 +642,14 @@ const Dashboard = () => {
             <div className="min-w-[600px] px-4 md:px-0">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="border-b border-gray-100 text-[10px] md:text-xs text-gray-500 uppercase tracking-wider sticky top-0 bg-white shadow-[0_1px_0_rgba(0,0,0,0.05)]">
+                  <tr className="border-b border-card-border text-[10px] md:text-xs text-gray-500 uppercase tracking-wider sticky top-0 bg-card-bg shadow-[0_1px_0_rgba(0,0,0,0.05)] transition-colors">
                     <th className="pb-4 pl-4 font-semibold">Description</th>
                     <th className="pb-4 font-semibold">Date</th>
                     <th className="pb-4 font-semibold">Type</th>
                     <th className="pb-4 text-right pr-4 font-semibold">Amount</th>
                   </tr>
                 </thead>
-                <tbody className="text-xs md:text-sm text-gray-700">
+                <tbody className="text-xs md:text-sm text-foreground/80">
                   {filteredTransactions.length === 0 ? (
                     <tr>
                       <td colSpan="4" className="text-center py-12 text-gray-400">
@@ -663,7 +663,7 @@ const Dashboard = () => {
                     filteredTransactions.map((t, index) => (
                       <tr
                         key={t._id || `${t.source}-${t.type}-${index}`}
-                        className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
+                        className="border-b border-card-border hover:bg-background/50 transition-colors"
                       >
                         <td className="py-4 pl-4 flex items-center gap-3">
                           <div
@@ -673,7 +673,7 @@ const Dashboard = () => {
                             {t.source.charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <p className="font-semibold text-gray-900">{t.source}</p>
+                            <p className="font-semibold text-foreground">{t.source}</p>
                             {t.description && (
                               <p className="text-gray-400 text-[10px] md:text-xs truncate max-w-[150px] md:max-w-xs">
                                 {t.description}
@@ -687,14 +687,14 @@ const Dashboard = () => {
                         <td className="py-4">
                           <span
                             className={`px-2 py-0.5 rounded-full text-[10px] md:text-xs font-bold border ${t.type === "income"
-                                ? "bg-blue-50 text-blue-600 border-blue-100"
-                                : "bg-red-50 text-red-500 border-red-100"
+                              ? "bg-blue-50 text-blue-600 border-blue-100"
+                              : "bg-red-50 text-red-500 border-red-100"
                               }`}
                           >
                             {t.type.toUpperCase()}
                           </span>
                         </td>
-                        <td className={`py-4 text-right pr-4 font-bold ${t.type === 'income' ? 'text-blue-600' : 'text-gray-900'}`}>
+                        <td className={`py-4 text-right pr-4 font-bold ${t.type === 'income' ? 'text-blue-500' : 'text-foreground'}`}>
                           {t.type === "income" ? "+" : "-"}
                           {formatCurrency(t.amount)}
                         </td>

@@ -4,14 +4,29 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
 import { HiMenu, HiX } from "react-icons/hi";
+import { FaSun, FaMoon } from "react-icons/fa";
+import { useTheme } from "@/context/ThemeContext";
 
 const NavBar = () => {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
+  const { isDarkMode, toggleTheme } = useTheme();
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
+  const ThemeToggle = () => (
+    <button
+      onClick={toggleTheme}
+      className="p-2 rounded-full hover:bg-white/10 transition-colors text-xl"
+      aria-label="Toggle Theme"
+    >
+      {isDarkMode ? <FaSun className="text-yellow-400" /> : <FaMoon className="text-gray-300" />}
+    </button>
+  );
+
   const AuthButtons = ({ isMobile }) => {
+    // ... existing AuthButtons logic ...
+    // (I'll keep the logic same but it needs to be accessible inside the component)
     if (session) {
       return (
         <button
@@ -40,7 +55,7 @@ const NavBar = () => {
             href="/signup"
             onClick={() => isMobile && setIsOpen(false)}
             className={`${isMobile ? "w-full text-center" : ""
-              } bg-lightBlue py-1 px-6 rounded-md hover:bg-lightBlue/80 transition duration-300`}
+              } bg-lightBlue py-1 px-6 rounded-md hover:bg-lightBlue/80 transition duration-300 text-white`}
           >
             Sign up
           </Link>
@@ -57,19 +72,8 @@ const NavBar = () => {
           Finance Tracker
         </Link>
 
-        {/* Hamburger Menu Icon (Mobile Only) */}
-        <div className="md:hidden">
-          <button
-            onClick={toggleMenu}
-            className="text-3xl focus:outline-none"
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <HiX /> : <HiMenu />}
-          </button>
-        </div>
-
         {/* Center: Navigation Links (Desktop Only) */}
-        <div className="hidden md:flex justify-center gap-10 text-lg">
+        <div className="hidden md:flex flex-1 justify-center gap-10 text-lg">
           <Link
             href="/dashboard"
             className="hover:text-lightBlue transition duration-300"
@@ -90,9 +94,22 @@ const NavBar = () => {
           </Link>
         </div>
 
-        {/* Right Side: Conditional Auth Buttons (Desktop Only) */}
-        <div className="hidden md:flex gap-4 lg:gap-10 justify-end">
+        {/* Right Side: Theme Toggle & Auth (Desktop Only) */}
+        <div className="hidden md:flex items-center gap-4 lg:gap-8 justify-end">
+          <ThemeToggle />
           <AuthButtons isMobile={false} />
+        </div>
+
+        {/* Mobile: Hamburger & Theme Toggle */}
+        <div className="md:hidden flex items-center gap-4">
+          <ThemeToggle />
+          <button
+            onClick={toggleMenu}
+            className="text-3xl focus:outline-none"
+            aria-label="Toggle menu"
+          >
+            {isOpen ? <HiX /> : <HiMenu />}
+          </button>
         </div>
       </div>
 

@@ -84,12 +84,12 @@ const AddIncome = ({ onSaveSuccess }) => {
       </button>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <div className="p-6 md:p-8">
+        <div className="p-6 md:p-8 bg-card-bg transition-colors duration-300 rounded-2xl">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-800">New Income Entry</h2>
+            <h2 className="text-xl md:text-2xl font-bold text-foreground">New Income Entry</h2>
             <button
               onClick={() => setIsModalOpen(false)}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-gray-400 hover:text-gray-200 transition-colors"
             >
               <FaTimes size={20} />
             </button>
@@ -106,7 +106,7 @@ const AddIncome = ({ onSaveSuccess }) => {
                   <input
                     type="text"
                     placeholder="e.g. Salary, Freelance"
-                    className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl py-3 pl-12 pr-4 focus:bg-white focus:border-green-500 outline-none transition-all placeholder:text-gray-300 text-sm md:text-base text-black"
+                    className="w-full bg-input-bg border-2 border-card-border rounded-xl py-3 pl-12 pr-4 focus:bg-card-bg focus:border-green-500 outline-none transition-all placeholder:text-gray-500 text-sm md:text-base text-foreground"
                     value={formData.source}
                     onChange={(e) => setFormData({ ...formData, source: e.target.value })}
                     required
@@ -125,7 +125,7 @@ const AddIncome = ({ onSaveSuccess }) => {
                   <input
                     type="number"
                     placeholder="0.00"
-                    className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl py-3 pl-10 pr-4 focus:bg-white focus:border-green-500 outline-none transition-all placeholder:text-gray-300 text-sm md:text-base text-black font-bold"
+                    className="w-full bg-input-bg border-2 border-card-border rounded-xl py-3 pl-10 pr-4 focus:bg-card-bg focus:border-green-500 outline-none transition-all placeholder:text-gray-500 text-sm md:text-base text-foreground font-bold"
                     value={formData.amount}
                     onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                     step="0.01"
@@ -143,7 +143,7 @@ const AddIncome = ({ onSaveSuccess }) => {
                 <FaCalendar className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors" />
                 <input
                   type="date"
-                  className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl py-3 pl-12 pr-4 focus:bg-white focus:border-green-500 outline-none transition-all text-sm md:text-base text-black"
+                  className="w-full bg-input-bg border-2 border-card-border rounded-xl py-3 pl-12 pr-4 focus:bg-card-bg focus:border-green-500 outline-none transition-all text-sm md:text-base text-foreground"
                   value={formData.date}
                   onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                   required
@@ -158,7 +158,7 @@ const AddIncome = ({ onSaveSuccess }) => {
               <textarea
                 placeholder="What was this for?"
                 rows="3"
-                className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl py-3 px-4 focus:bg-white focus:border-green-500 outline-none transition-all placeholder:text-gray-300 text-sm md:text-base text-black"
+                className="w-full bg-input-bg border-2 border-card-border rounded-xl py-3 px-4 focus:bg-card-bg focus:border-green-500 outline-none transition-all placeholder:text-gray-500 text-sm md:text-base text-foreground"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               ></textarea>
@@ -168,14 +168,14 @@ const AddIncome = ({ onSaveSuccess }) => {
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="flex-1 px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 transition-colors order-2 md:order-1"
+                className="flex-1 px-6 py-3 rounded-xl font-bold text-gray-400 hover:bg-gray-700/50 transition-colors order-2 md:order-1"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-[2] bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-green-200 active:scale-95 disabled:opacity-50 disabled:scale-100 order-1 md:order-2"
+                className="flex-[2] bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-green-900/20 active:scale-95 disabled:opacity-50 disabled:scale-100 order-1 md:order-2"
               >
                 {loading ? "Saving..." : "Save Income"}
               </button>
