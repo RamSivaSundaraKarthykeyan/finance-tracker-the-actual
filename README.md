@@ -49,7 +49,7 @@ This project leverages modern web technologies to provide a premium, responsive,
 
 1. Clone the repository:
    ```bash
-   git clone [<repository-url>](https://github.com/RamSivaSundaraKarthykeyan/finance-tracker-the-actual.git)
+   git clone https://github.com/RamSivaSundaraKarthykeyan/finance-tracker-the-actual.git
    ```
 
 2. Install dependencies:
